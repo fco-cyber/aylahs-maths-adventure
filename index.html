@@ -1,0 +1,1436 @@
+<!doctype html>
+<html lang="en-AU">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>Aylah's Maths Adventure</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --primary:#ff5fa2; --accent:#7b5cff; --bg1:#fff0f6; --bg2:#ede7ff;
+    --ink:#2c2140; --card:#ffffff; --good:#20c07a; --bad:#ff6b6b; --gold:#ffc93c;
+    --vc-teal:#5bc4c4; --vc-navy:#1e2a5a;
+  }
+  body[data-world="animals"]{ --primary:#37a86b; --accent:#ff8c42; --bg1:#eafbef; --bg2:#fff3e6; --ink:#22331f; }
+  body[data-world="space"]{ --primary:#7367f0; --accent:#00cec9; --bg1:#e9e7ff; --bg2:#e2fbfa; --ink:#241f42; }
+  body[data-world="ocean"]{ --primary:#0aa5c9; --accent:#00b894; --bg1:#e4f7fb; --bg2:#e5fbf3; --ink:#173540; }
+
+  *{ box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+  html,body{ margin:0; padding:0; }
+  body{
+    font-family:"Comic Sans MS","Chalkboard SE","Baloo 2",system-ui,-apple-system,Segoe UI,sans-serif;
+    color:var(--ink);
+    background:linear-gradient(160deg,var(--bg1),var(--bg2));
+    min-height:100vh; overflow-x:hidden;
+  }
+  .wrap{ max-width:920px; margin:0 auto; padding:12px 14px 60px; }
+
+  /* Header */
+  header{
+    display:flex; align-items:center; gap:10px; flex-wrap:wrap;
+    background:var(--card); border-radius:22px; padding:10px 14px; margin-bottom:14px;
+    box-shadow:0 6px 20px rgba(0,0,0,.08);
+  }
+  .logo{ font-size:20px; font-weight:900; color:var(--primary); display:flex; align-items:center; gap:8px; }
+  .logo .spark{ font-size:24px; }
+  .header-right{ margin-left:auto; display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+  .star-count{
+    background:linear-gradient(180deg,#fff6d6,#ffe9a8); color:#8a6b00; font-weight:900;
+    border-radius:999px; padding:6px 14px; font-size:17px; display:flex; align-items:center; gap:6px;
+    border:2px solid #ffdf7a;
+  }
+  .worlds{ display:flex; gap:6px; }
+  .world-btn{
+    border:2px solid transparent; background:#f1eef8; border-radius:14px; font-size:20px;
+    width:42px; height:42px; cursor:pointer; display:flex; align-items:center; justify-content:center;
+    transition:transform .1s;
+  }
+  .world-btn:hover{ transform:translateY(-2px); }
+  .world-btn.active{ border-color:var(--primary); background:#fff; box-shadow:0 3px 10px rgba(0,0,0,.12); }
+  .icon-btn{
+    border:2px solid #eee; background:#fff; border-radius:14px; width:42px; height:42px; font-size:20px;
+    cursor:pointer; display:flex; align-items:center; justify-content:center;
+  }
+
+  /* Mascot + bubble */
+  .mascot-row{ display:flex; align-items:flex-end; gap:12px; margin-bottom:14px; }
+  .mascot{ font-size:56px; line-height:1; filter:drop-shadow(0 6px 6px rgba(0,0,0,.15)); animation:bob 2.4s ease-in-out infinite; }
+  @keyframes bob{ 0%,100%{ transform:translateY(0);} 50%{ transform:translateY(-8px);} }
+  .bubble{
+    background:var(--card); border-radius:18px; padding:12px 16px; font-size:17px; font-weight:700;
+    box-shadow:0 6px 18px rgba(0,0,0,.08); position:relative; flex:1;
+  }
+  .bubble:after{
+    content:""; position:absolute; left:-10px; bottom:14px; border:10px solid transparent;
+    border-right-color:var(--card);
+  }
+
+  /* Home grid */
+  h2.section{ font-size:20px; margin:6px 4px 10px; }
+  .grid{ display:grid; grid-template-columns:repeat(auto-fill,minmax(150px,1fr)); gap:12px; }
+  .tile{
+    background:var(--card); border:none; border-radius:20px; padding:16px 12px; cursor:pointer;
+    box-shadow:0 6px 16px rgba(0,0,0,.08); text-align:center; transition:transform .12s, box-shadow .12s;
+    display:flex; flex-direction:column; align-items:center; gap:8px; color:var(--ink);
+    font-family:inherit;
+  }
+  .tile:hover{ transform:translateY(-4px); box-shadow:0 12px 26px rgba(0,0,0,.14); }
+  .tile .emoji{ font-size:40px; }
+  .tile .t-title{ font-weight:900; font-size:16px; }
+  .tile .t-sub{ font-size:12.5px; opacity:.7; font-weight:700; }
+  .tile .chip{ font-size:11px; font-weight:900; color:#fff; background:var(--accent); border-radius:999px; padding:2px 8px; }
+
+  /* Activity screen */
+  .screen-head{ display:flex; align-items:center; gap:10px; margin-bottom:12px; }
+  .back{
+    background:var(--card); border:none; border-radius:16px; padding:10px 16px; font-size:16px; font-weight:900;
+    cursor:pointer; box-shadow:0 4px 12px rgba(0,0,0,.08); color:var(--ink); font-family:inherit;
+  }
+  .screen-title{ font-size:22px; font-weight:900; color:var(--primary); }
+  .panel{ background:var(--card); border-radius:22px; padding:18px; box-shadow:0 8px 24px rgba(0,0,0,.08); margin-bottom:14px; }
+  .instru{ font-size:17px; font-weight:700; margin:0 0 12px; line-height:1.4; }
+  .subtle{ opacity:.75; font-weight:700; font-size:14px; }
+
+  /* Buttons */
+  .btn{
+    border:none; border-radius:16px; padding:12px 18px; font-size:17px; font-weight:900; cursor:pointer;
+    font-family:inherit; box-shadow:0 4px 0 rgba(0,0,0,.12); transition:transform .06s;
+  }
+  .btn:active{ transform:translateY(2px); box-shadow:0 2px 0 rgba(0,0,0,.12); }
+  .btn-primary{ background:var(--primary); color:#fff; }
+  .btn-accent{ background:var(--accent); color:#fff; }
+  .btn-ghost{ background:#f1eef8; color:var(--ink); box-shadow:0 4px 0 rgba(0,0,0,.06); }
+  .btn-say{ background:#fff3d6; color:#8a6b00; border:2px solid #ffdf7a; box-shadow:0 4px 0 #ffe9a8; }
+  .btn-row{ display:flex; gap:10px; flex-wrap:wrap; align-items:center; }
+  .btn-lg{ font-size:20px; padding:14px 22px; }
+  .mode-tabs{ display:flex; gap:8px; flex-wrap:wrap; margin-bottom:14px; }
+  .mode-tab{ background:#f1eef8; border:none; border-radius:14px; padding:9px 14px; font-weight:900; font-family:inherit; cursor:pointer; font-size:14px; color:var(--ink); }
+  .mode-tab.active{ background:var(--primary); color:#fff; }
+
+  /* Feedback */
+  .feedback{ font-size:18px; font-weight:900; margin-top:12px; min-height:26px; }
+  .feedback.correct{ color:var(--good); }
+  .feedback.wrong{ color:var(--bad); }
+  .hintbox{ background:#fff8e6; border:2px dashed var(--gold); border-radius:14px; padding:10px 14px; margin-top:12px; font-weight:700; font-size:15px; }
+
+  /* Place value chart */
+  .pv-chart{ display:flex; gap:10px; justify-content:center; flex-wrap:wrap; }
+  .pv-col{ text-align:center; }
+  .pv-label{ font-weight:900; font-size:13px; padding:6px 8px; border-radius:10px 10px 0 0; color:#fff; }
+  .pv-th{ background:#7367f0; } .pv-h{ background:#ff8c42; } .pv-t{ background:#20c07a; } .pv-o{ background:#ff5fa2; }
+  .pv-box{ background:#faf8ff; border:3px solid #e7e1fb; border-top:none; border-radius:0 0 14px 14px; padding:8px; width:82px; }
+  .pv-digit{ font-size:44px; font-weight:900; line-height:1; }
+  .pv-arrow{ border:none; background:#efeafc; border-radius:10px; width:100%; padding:6px; font-size:18px; cursor:pointer; font-weight:900; color:var(--ink); }
+  .pv-arrow:active{ background:#e0d8fa; }
+  .bignum{ font-size:40px; font-weight:900; text-align:center; letter-spacing:1px; }
+  .expanded{ font-size:24px; font-weight:900; text-align:center; color:var(--accent); }
+  .words{ font-size:19px; font-weight:800; text-align:center; font-style:italic; }
+  .mab{ display:flex; gap:14px; justify-content:center; flex-wrap:wrap; margin-top:6px; }
+  .mab-group{ text-align:center; font-weight:800; font-size:12px; }
+  .mab-dots{ display:flex; flex-wrap:wrap; gap:3px; justify-content:center; max-width:120px; margin:0 auto 4px; min-height:20px; }
+  .cube{ width:16px; height:16px; border-radius:4px; }
+  .c-th{ background:#7367f0; } .c-h{ background:#ff8c42; } .c-t{ background:#20c07a; } .c-o{ background:#ff5fa2; }
+
+  /* Inputs */
+  input.num{
+    font-family:inherit; font-size:26px; font-weight:900; text-align:center; width:120px; padding:8px 6px;
+    border:3px solid #e7e1fb; border-radius:14px; color:var(--ink); background:#faf8ff;
+  }
+  input.num:focus{ outline:none; border-color:var(--primary); }
+  input.small{ width:84px; font-size:22px; }
+  .blanks{ display:flex; gap:8px; align-items:center; justify-content:center; flex-wrap:wrap; font-size:26px; font-weight:900; }
+
+  /* Playing cards */
+  .cards-row{ display:flex; gap:10px; justify-content:center; flex-wrap:wrap; margin:10px 0; min-height:96px; }
+  .pcard{
+    width:64px; height:92px; border-radius:12px; background:#fff; border:3px solid #d9d0f5;
+    display:flex; align-items:center; justify-content:center; font-size:34px; font-weight:900; cursor:pointer;
+    box-shadow:0 4px 10px rgba(0,0,0,.1); color:var(--accent); position:relative; user-select:none;
+  }
+  .pcard.used{ opacity:.35; pointer-events:none; }
+  .pcard .pip{ position:absolute; top:4px; left:7px; font-size:13px; }
+  .pcard .pip.b{ top:auto; left:auto; bottom:4px; right:7px; transform:rotate(180deg); }
+  .slots{ display:flex; gap:10px; justify-content:center; flex-wrap:wrap; margin:10px 0; }
+  .slot{
+    width:60px; height:88px; border-radius:12px; border:3px dashed var(--primary); background:#faf8ff;
+    display:flex; align-items:center; justify-content:center; font-size:34px; font-weight:900; color:var(--primary);
+    cursor:pointer;
+  }
+  .slot.filled{ border-style:solid; background:#fff; }
+
+  /* Odometer */
+  .odometer{ display:flex; gap:6px; justify-content:center; margin:10px 0; }
+  .odo-digit{
+    width:52px; height:70px; background:#241f42; color:#fff; border-radius:10px; display:flex;
+    align-items:center; justify-content:center; font-size:40px; font-weight:900; overflow:hidden; position:relative;
+  }
+  .odo-digit.comma{ background:transparent; color:var(--ink); width:16px; }
+  .odo-digit.changing{ background:var(--primary); animation:flip .4s; }
+  @keyframes flip{ 0%{ transform:translateY(-10px); opacity:.3;} 100%{ transform:translateY(0); opacity:1;} }
+  .seq{ display:flex; gap:8px; flex-wrap:wrap; justify-content:center; margin-top:10px; }
+  .seq-chip{ background:#f1eef8; border-radius:12px; padding:8px 12px; font-weight:900; font-size:18px; }
+  .seq-chip.now{ background:var(--primary); color:#fff; }
+
+  /* Number line */
+  .numline-wrap{ overflow-x:auto; padding:6px 0 2px; }
+  svg.nl{ display:block; margin:0 auto; }
+  .nl-tick{ cursor:pointer; }
+  .nl-label{ font-size:12px; font-weight:900; fill:var(--ink); }
+  .nl-value{ font-weight:900; }
+
+  /* Money */
+  .money-tray{ display:flex; gap:10px; flex-wrap:wrap; justify-content:center; margin:8px 0 4px; min-height:70px; }
+  .coin{
+    width:60px; height:60px; border-radius:50%; display:flex; align-items:center; justify-content:center;
+    font-weight:900; font-size:15px; box-shadow:0 4px 8px rgba(0,0,0,.18); border:3px solid rgba(0,0,0,.12);
+    color:#4a3b00; text-align:center; line-height:1.05;
+  }
+  .coin.gold{ background:radial-gradient(circle at 35% 30%,#ffe9a0,#e8b021); }
+  .coin.silver{ background:radial-gradient(circle at 35% 30%,#f4f6f8,#b9c3cc); color:#33404a; }
+  .coin.small2{ width:52px; height:52px; font-size:14px; }
+  .note{
+    width:104px; height:56px; border-radius:8px; display:flex; align-items:center; justify-content:center;
+    font-weight:900; font-size:20px; color:#fff; box-shadow:0 4px 8px rgba(0,0,0,.2); border:2px solid rgba(255,255,255,.5);
+    text-shadow:0 1px 2px rgba(0,0,0,.35);
+  }
+  .note.n5{ background:linear-gradient(135deg,#ef8bc0,#c65a9c); }
+  .note.n10{ background:linear-gradient(135deg,#6fb8e6,#3d6fb0); }
+  .note.n20{ background:linear-gradient(135deg,#ef7d5a,#c0392b); }
+  .note.n50{ background:linear-gradient(135deg,#f6c95a,#c99a1e); color:#5a4300; text-shadow:none; }
+  .note.n100{ background:linear-gradient(135deg,#7ec98a,#3f9556); }
+  .price-tag{ display:inline-flex; align-items:center; gap:6px; background:#fff8e6; border:2px solid var(--gold); border-radius:12px; padding:6px 12px; font-weight:900; font-size:18px; }
+
+  /* Badges shelf */
+  .shelf{ display:flex; gap:8px; flex-wrap:wrap; margin-top:6px; }
+  .badge{ background:var(--card); border-radius:14px; padding:8px 10px; font-size:13px; font-weight:900; box-shadow:0 4px 10px rgba(0,0,0,.06); display:flex; align-items:center; gap:6px; opacity:.35; filter:grayscale(1); }
+  .badge.earned{ opacity:1; filter:none; }
+
+  /* Celebration */
+  #confetti{ position:fixed; inset:0; pointer-events:none; z-index:50; overflow:hidden; }
+  .confetti-piece{ position:absolute; top:-20px; font-size:22px; animation:fall linear forwards; }
+  @keyframes fall{ to{ transform:translateY(105vh) rotate(540deg); opacity:.9; } }
+  .toast{
+    position:fixed; left:50%; top:22%; transform:translateX(-50%) scale(.6); z-index:60;
+    background:var(--card); border-radius:22px; padding:20px 28px; text-align:center; box-shadow:0 16px 40px rgba(0,0,0,.25);
+    font-weight:900; font-size:22px; opacity:0; transition:transform .25s, opacity .25s; pointer-events:none;
+    border:4px solid var(--gold);
+  }
+  .toast.show{ transform:translateX(-50%) scale(1); opacity:1; }
+  .toast .big{ font-size:44px; display:block; margin-bottom:4px; }
+
+  footer{ text-align:center; font-size:12.5px; opacity:.6; margin-top:20px; font-weight:700; }
+  .visually{ font-size:13px; }
+  @media (max-width:520px){
+    .pv-digit{ font-size:36px; } .pv-box{ width:70px; }
+    .bignum{ font-size:32px; } .odo-digit{ width:42px; height:58px; font-size:32px; }
+  }
+
+  /* Voice settings panel */
+  .vc-overlay{ position:fixed; inset:0; background:rgba(20,16,40,.5); display:none; align-items:center; justify-content:center; z-index:70; padding:16px; }
+  .vc-overlay.show{ display:flex; }
+  .vc-card{ background:#fff; border-radius:28px; padding:24px 24px 18px; width:100%; max-width:440px; max-height:94vh; overflow:auto;
+    box-shadow:0 24px 70px rgba(0,0,0,.45); font-family:inherit; color:var(--vc-navy); animation:vcPop .2s ease-out; }
+  @keyframes vcPop{ from{ transform:scale(.9); opacity:0; } to{ transform:scale(1); opacity:1; } }
+  .vc-head{ font-size:25px; font-weight:900; margin:0 0 14px; }
+  .vc-row{ display:flex; justify-content:space-between; align-items:baseline; margin:16px 2px 8px; gap:10px; }
+  .vc-lbl{ font-size:19px; font-weight:900; }
+  .vc-val{ font-size:18px; font-weight:900; text-align:right; }
+  .vc-range{ -webkit-appearance:none; appearance:none; width:100%; height:12px; border-radius:999px; background:#3a3f4a; outline:none; margin:2px 0 4px; }
+  .vc-range::-webkit-slider-thumb{ -webkit-appearance:none; appearance:none; width:26px; height:26px; border-radius:50%; background:var(--vc-teal); cursor:pointer; box-shadow:0 2px 6px rgba(0,0,0,.35); border:3px solid #fff; }
+  .vc-range::-moz-range-thumb{ width:22px; height:22px; border-radius:50%; background:var(--vc-teal); cursor:pointer; border:3px solid #fff; }
+  .vc-presets{ display:flex; gap:10px; background:#eef4fb; border-radius:20px; padding:8px; margin:12px 0 4px; }
+  .vc-preset{ flex:1; border:none; background:transparent; border-radius:16px; padding:12px 6px; font-family:inherit; font-weight:900; font-size:16px; color:var(--vc-navy); cursor:pointer; line-height:1.35; }
+  .vc-preset.active{ background:#fff; box-shadow:0 5px 14px rgba(0,0,0,.14); }
+  .vc-btns{ display:flex; gap:12px; margin-top:20px; }
+  .vc-btn{ border:none; border-radius:18px; padding:16px 10px; font-family:inherit; font-weight:900; font-size:20px; cursor:pointer; }
+  .vc-btn:active{ transform:translateY(3px); box-shadow:none !important; }
+  .vc-test{ flex:1.5; background:var(--vc-teal); color:#fff; box-shadow:0 5px 0 #3ea6a6; }
+  .vc-done{ flex:1; background:#9aa6bf; color:#fff; box-shadow:0 5px 0 #7c88a1; }
+  .vc-help{ margin-top:16px; font-size:15px; font-weight:800; color:#5b7bb0; line-height:1.45; }
+
+  /* ============================================================
+     ✨ DESIGN REFRESH — fonts, depth, colour, motion
+     (appended last so it restyles the components above)
+     ============================================================ */
+  :root{
+    --font-body:"Nunito", ui-rounded, "SF Pro Rounded", system-ui, -apple-system, sans-serif;
+    --font-display:"Fredoka", "Baloo 2", var(--font-body);
+  }
+  body[data-world="rainbow"]{ --primary:#ff3d92; --primary2:#ff86bd; --accent:#7c4dff; --accent2:#b18cff; --bg1:#fff2f9; --bg2:#f1ecff; --blob1:#ffc7e6; --blob2:#e0d2ff; --ink:#3a2b4d; --card:#ffffff; }
+  body[data-world="animals"]{ --primary:#1f9f55; --primary2:#5fce85; --accent:#ff9226; --accent2:#ffbf73; --bg1:#ebfbef; --bg2:#fff5e8; --blob1:#c3f1d1; --blob2:#ffe1bd; --ink:#213a20; --card:#ffffff; }
+  body[data-world="space"]{ --primary:#6c5ce7; --primary2:#9a8bf0; --accent:#00cec9; --accent2:#5fe3df; --bg1:#ece9ff; --bg2:#e4fbfa; --blob1:#d3ceff; --blob2:#c3f5f2; --ink:#211c46; --card:#ffffff; }
+  body[data-world="ocean"]{ --primary:#0aa5c9; --primary2:#46c6e0; --accent:#00b894; --accent2:#54d8ba; --bg1:#e5f8fc; --bg2:#e6fbf3; --blob1:#c0eaf5; --blob2:#c4f4e5; --ink:#103440; --card:#ffffff; }
+
+  body{ font-family:var(--font-body); color:var(--ink); font-weight:700;
+    background:linear-gradient(160deg,var(--bg1),var(--bg2)); background-attachment:fixed; }
+
+  /* animated themed background */
+  #bg{ position:fixed; inset:0; z-index:-1; overflow:hidden; pointer-events:none; }
+  #bg .blob{ position:absolute; border-radius:50%; filter:blur(52px); opacity:.6; }
+  #bg .blob.b1{ width:46vw; height:46vw; min-width:340px; min-height:340px; background:var(--blob1); top:-10vw; left:-8vw; animation:drift1 20s ease-in-out infinite; }
+  #bg .blob.b2{ width:40vw; height:40vw; min-width:300px; min-height:300px; background:var(--blob2); bottom:-12vw; right:-6vw; animation:drift2 24s ease-in-out infinite; }
+  #bg .dots{ position:absolute; inset:0; color:var(--ink); opacity:.05; background-image:radial-gradient(currentColor 1.4px, transparent 1.4px); background-size:30px 30px; }
+  #bg .float{ position:absolute; font-size:30px; opacity:.5; filter:drop-shadow(0 5px 7px rgba(0,0,0,.12)); animation:bobFloat 9s ease-in-out infinite; }
+  @keyframes drift1{ 50%{ transform:translate(5vw,4vw) scale(1.12); } }
+  @keyframes drift2{ 50%{ transform:translate(-4vw,-3vw) scale(1.1); } }
+  @keyframes bobFloat{ 50%{ transform:translateY(-20px) rotate(10deg); } }
+  @keyframes floatUp{ from{ opacity:0; transform:translateY(18px); } to{ opacity:1; transform:translateY(0); } }
+  @keyframes popIn{ 0%{ opacity:0; transform:scale(.94); } 100%{ opacity:1; transform:scale(1); } }
+
+  .wrap{ max-width:960px; position:relative; }
+
+  /* glassy header */
+  header{ background:rgba(255,255,255,.68); backdrop-filter:blur(16px) saturate(1.5); -webkit-backdrop-filter:blur(16px) saturate(1.5);
+    border:1px solid rgba(255,255,255,.75); border-radius:26px; box-shadow:0 12px 34px rgba(60,40,90,.13); }
+  .logo{ font-family:var(--font-display); font-weight:700; font-size:22px;
+    background:linear-gradient(120deg,var(--primary),var(--accent)); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; }
+  .logo .spark{ -webkit-text-fill-color:initial; }
+  .star-count{ background:linear-gradient(180deg,#fff2c9,#ffdf85); border:2px solid #ffd062; color:#8a5b00; box-shadow:0 6px 16px rgba(255,193,60,.4); }
+  .world-btn{ background:rgba(255,255,255,.6); border-radius:16px; }
+  .world-btn.active{ background:#fff; border-color:var(--primary); box-shadow:0 5px 14px rgba(0,0,0,.14); transform:translateY(-1px); }
+  .icon-btn{ background:rgba(255,255,255,.72); border:1px solid rgba(0,0,0,.06); border-radius:16px; }
+  .icon-btn:hover, .world-btn:hover{ transform:translateY(-2px); }
+
+  /* mascot + speech bubble */
+  .mascot{ font-size:66px; }
+  .bubble{ font-family:var(--font-body); font-weight:800; border-radius:22px;
+    background:linear-gradient(180deg,#ffffff,#fbf7ff); border:1px solid rgba(255,255,255,.85); box-shadow:0 14px 32px rgba(60,40,90,.14); }
+  .bubble:after{ border-right-color:#fff; }
+
+  h2.section{ font-family:var(--font-display); font-weight:700; font-size:22px; }
+
+  /* home tiles */
+  .grid{ gap:14px; }
+  .tile{ border-radius:24px; padding:18px 12px; border:1px solid rgba(255,255,255,.85);
+    background:linear-gradient(180deg,#ffffff,#fbfaff); box-shadow:0 12px 28px rgba(60,40,90,.10); animation:floatUp .45s ease both; }
+  .tile:hover{ transform:translateY(-6px) scale(1.02); box-shadow:0 20px 42px rgba(60,40,90,.18); }
+  .tile .emoji{ width:76px; height:76px; border-radius:22px; display:flex; align-items:center; justify-content:center; font-size:38px; margin-bottom:6px;
+    box-shadow:0 8px 18px rgba(0,0,0,.16), inset 0 2px 6px rgba(255,255,255,.55); }
+  .tile .t-title{ font-family:var(--font-display); font-weight:600; font-size:17px; }
+  .tile .chip{ background:linear-gradient(120deg,var(--accent),var(--accent2)); box-shadow:0 4px 10px rgba(0,0,0,.12); }
+  .tile:nth-child(1) .emoji{ background:linear-gradient(135deg,#ffb24d,#ff6f91); }
+  .tile:nth-child(2) .emoji{ background:linear-gradient(135deg,#41d6c3,#2aa6ff); }
+  .tile:nth-child(3) .emoji{ background:linear-gradient(135deg,#a879ff,#7c4dff); }
+  .tile:nth-child(4) .emoji{ background:linear-gradient(135deg,#ff8fc0,#ff5f9e); }
+  .tile:nth-child(5) .emoji{ background:linear-gradient(135deg,#63d68a,#2fae60); }
+  .tile:nth-child(6) .emoji{ background:linear-gradient(135deg,#5cb8ff,#3d6fb0); }
+  .tile:nth-child(7) .emoji{ background:linear-gradient(135deg,#ff8173,#e14b3b); }
+  .tile:nth-child(8) .emoji{ background:linear-gradient(135deg,#ffd76b,#f0a92e); }
+  .tile:nth-child(1){animation-delay:.03s} .tile:nth-child(2){animation-delay:.06s} .tile:nth-child(3){animation-delay:.09s} .tile:nth-child(4){animation-delay:.12s}
+  .tile:nth-child(5){animation-delay:.15s} .tile:nth-child(6){animation-delay:.18s} .tile:nth-child(7){animation-delay:.21s} .tile:nth-child(8){animation-delay:.24s}
+
+  /* screen header + panels */
+  .back{ border-radius:16px; background:rgba(255,255,255,.9); }
+  .screen-title{ font-family:var(--font-display); font-weight:700; font-size:24px; color:var(--primary); }
+  .panel{ border-radius:30px; border:1px solid rgba(255,255,255,.9);
+    background:linear-gradient(180deg,#ffffff,#fcfbff); box-shadow:0 18px 46px rgba(60,40,90,.14); animation:floatUp .4s ease both; }
+
+  /* buttons */
+  .btn{ border-radius:18px; font-family:var(--font-display); font-weight:600; letter-spacing:.2px; }
+  .btn-primary{ background:linear-gradient(180deg,var(--primary2),var(--primary)); color:#fff; box-shadow:0 6px 0 rgba(0,0,0,.13), 0 12px 22px rgba(0,0,0,.10); }
+  .btn-accent{ background:linear-gradient(180deg,var(--accent2),var(--accent)); color:#fff; box-shadow:0 6px 0 rgba(0,0,0,.13), 0 12px 22px rgba(0,0,0,.10); }
+  .btn-ghost{ background:rgba(255,255,255,.92); border:1px solid rgba(0,0,0,.06); box-shadow:0 5px 0 rgba(0,0,0,.06); }
+  .btn-say{ background:linear-gradient(180deg,#fff3d2,#ffe291); border:2px solid #ffd878; box-shadow:0 5px 0 #f4cf78; }
+  .mode-tab{ border-radius:16px; font-family:var(--font-display); font-weight:600; }
+  .mode-tab.active{ background:linear-gradient(180deg,var(--primary2),var(--primary)); color:#fff; box-shadow:0 5px 13px rgba(0,0,0,.16); }
+
+  /* number displays */
+  .bignum{ font-family:var(--font-display); font-weight:700; font-size:52px; letter-spacing:2px;
+    background:linear-gradient(120deg,var(--primary),var(--accent)); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; }
+  .words{ font-family:var(--font-display); font-weight:500; font-style:normal; }
+  .expanded{ font-family:var(--font-display); font-weight:600; }
+
+  /* place value chart */
+  .pv-label{ font-family:var(--font-display); font-weight:600; }
+  .pv-box{ border-radius:0 0 16px 16px; background:linear-gradient(180deg,#fbfaff,#f2edff); }
+  .pv-digit{ font-family:var(--font-display); font-weight:700; }
+  .pv-arrow{ border-radius:12px; }
+  .pv-arrow:hover{ background:#e7dffb; }
+
+  /* inputs */
+  input.num{ font-family:var(--font-display); font-weight:600; border-radius:16px; border-color:#e6ddfb; background:#faf8ff; box-shadow:inset 0 2px 5px rgba(0,0,0,.04); }
+  input.num:focus{ border-color:var(--primary); box-shadow:0 0 0 4px rgba(124,77,255,.16); }
+
+  /* cards */
+  .pcard{ border-radius:14px; background:linear-gradient(180deg,#ffffff,#f6f2ff); box-shadow:0 7px 15px rgba(0,0,0,.12); }
+  .pcard:hover{ transform:translateY(-3px); }
+  .slot{ border-radius:14px; }
+
+  /* odometer */
+  .odo-digit{ border-radius:12px; font-family:var(--font-display); background:linear-gradient(180deg,#3a3260,#241f42); box-shadow:inset 0 2px 6px rgba(0,0,0,.4); }
+  .odo-digit.comma{ background:transparent; box-shadow:none; }
+  .odo-digit.changing{ background:linear-gradient(180deg,var(--primary2),var(--primary)); }
+
+  /* chips, feedback, hints */
+  .seq-chip{ border-radius:14px; font-family:var(--font-display); font-weight:600; }
+  .seq-chip.now{ background:linear-gradient(180deg,var(--primary2),var(--primary)); color:#fff; }
+  .feedback{ font-family:var(--font-display); font-weight:600; }
+  .hintbox{ border-radius:18px; background:linear-gradient(180deg,#fff9ea,#fff1cc); border-color:#ffd062; animation:popIn .25s ease both; }
+
+  /* badges + price */
+  .badge{ border-radius:16px; }
+  .badge.earned{ box-shadow:0 6px 16px rgba(0,0,0,.10); }
+  .price-tag{ border-radius:14px; }
+
+  footer{ font-weight:700; }
+
+  @media (max-width:520px){
+    .bignum{ font-size:40px; }
+    .tile .emoji{ width:66px; height:66px; font-size:32px; }
+    #bg .float{ font-size:24px; }
+  }
+</style>
+<meta name="description" content="A friendly Grade 4 maths practice app — place value, number lines, skip counting and Australian money.">
+<meta name="theme-color" content="#7c4dff">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="favicon.png" sizes="any">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Maths Adventure">
+</head>
+<body data-world="rainbow">
+  <div id="bg"></div>
+  <div class="wrap">
+    <header>
+      <div class="logo"><span class="spark">✨</span><span>Aylah's Maths Adventure</span></div>
+      <div class="header-right">
+        <div class="worlds" id="worlds"></div>
+        <button class="icon-btn" id="voiceBtn" title="Voice settings">🗣️</button>
+        <button class="icon-btn" id="soundBtn" title="Sound on/off">🔊</button>
+        <div class="star-count" id="starCount">⭐ 0</div>
+      </div>
+    </header>
+    <div id="content"></div>
+    <footer>Made with love for Aylah • Grade 4 Maths • Melbourne, Australia 🇦🇺</footer>
+  </div>
+  <div id="confetti"></div>
+  <div class="toast" id="toast"></div>
+  <div class="vc-overlay" id="vcOverlay"><div class="vc-card" id="vcCard"></div></div>
+
+<script>
+/* ============================================================
+   AYLAH'S MATHS ADVENTURE  —  core engine
+   ============================================================ */
+"use strict";
+
+/* ---------- Worlds / themes ---------- */
+const WORLDS = {
+  rainbow: { emoji:"🦄", icon:"🌈", name:"Rainbow Land", helper:"Sparkle the Unicorn" },
+  animals: { emoji:"🐶", icon:"🐾", name:"Pet Park",     helper:"Biscuit the Puppy" },
+  space:   { emoji:"🚀", icon:"🪐", name:"Space Quest",   helper:"Captain Nova" },
+  ocean:   { emoji:"🐬", icon:"🐚", name:"Under the Sea", helper:"Splash the Dolphin" }
+};
+
+/* ---------- State (safe persistence) ---------- */
+const SAVE_KEY = "aylah_maths_v1";
+let state = { world:"rainbow", stars:0, muted:false, badges:{}, rate:0.8, pitch:1.0, pause:0.5 };
+function loadState(){
+  try{ const s=JSON.parse(localStorage.getItem(SAVE_KEY)); if(s) state=Object.assign(state,s); }catch(e){}
+}
+function saveState(){
+  try{ localStorage.setItem(SAVE_KEY, JSON.stringify(state)); }catch(e){}
+}
+loadState();
+
+/* ---------- Elements ---------- */
+const content = document.getElementById("content");
+const starCountEl = document.getElementById("starCount");
+const soundBtn = document.getElementById("soundBtn");
+
+/* ---------- Speech (Australian voice) ---------- */
+let voices = [];
+function pickVoice(){
+  const all = window.speechSynthesis ? speechSynthesis.getVoices() : [];
+  voices = all;
+}
+if(window.speechSynthesis){
+  pickVoice();
+  speechSynthesis.onvoiceschanged = pickVoice;
+}
+function chosenVoice(){
+  if(!voices.length) pickVoice();
+  const order = [v=>/en-AU/i.test(v.lang), v=>/en-GB/i.test(v.lang), v=>/^en/i.test(v.lang)];
+  for(const test of order){ const m=voices.find(test); if(m) return m; }
+  return null;
+}
+function speak(text, force, onDone){
+  if((state.muted && !force) || !window.speechSynthesis){ if(onDone) onDone(); return; }
+  try{
+    speechSynthesis.cancel();
+    // Split into parts at commas so the voice can pause between the thousands,
+    // hundreds, etc. — great for hearing big numbers clearly.
+    const parts = String(text).split(/,\s*/).map(p=>p.trim()).filter(p=>p.length);
+    speakParts(parts.length? parts : [String(text)], 0, onDone);
+  }catch(e){ if(onDone) onDone(); }
+}
+function speakParts(parts, i, onDone){
+  if(i>=parts.length || !window.speechSynthesis){ if(onDone) onDone(); return; }
+  const u = new SpeechSynthesisUtterance(parts[i]);
+  const v = chosenVoice(); if(v){ u.voice=v; u.lang=v.lang; } else { u.lang="en-AU"; }
+  u.rate = state.rate; u.pitch = state.pitch;
+  u.onend = ()=>{
+    if(i+1 < parts.length){ setTimeout(()=>speakParts(parts, i+1, onDone), Math.round(state.pause*1000)); }
+    else if(onDone){ onDone(); }
+  };
+  speechSynthesis.speak(u);
+}
+function stopSpeak(){ try{ if(window.speechSynthesis) speechSynthesis.cancel(); }catch(e){} }
+
+/* ---------- Little sound effects (WebAudio) ---------- */
+let audioCtx=null;
+function beep(kind){
+  if(state.muted) return;
+  try{
+    audioCtx = audioCtx || new (window.AudioContext||window.webkitAudioContext)();
+    const o=audioCtx.createOscillator(), g=audioCtx.createGain();
+    o.connect(g); g.connect(audioCtx.destination);
+    if(kind==="good"){ o.frequency.value=660; o.type="sine"; }
+    else if(kind==="win"){ o.frequency.value=880; o.type="triangle"; }
+    else { o.frequency.value=200; o.type="sawtooth"; }
+    g.gain.setValueAtTime(0.0001, audioCtx.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.2, audioCtx.currentTime+0.01);
+    g.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime+0.3);
+    o.start(); o.stop(audioCtx.currentTime+0.31);
+    if(kind==="good"||kind==="win"){
+      const o2=audioCtx.createOscillator(), g2=audioCtx.createGain();
+      o2.connect(g2); g2.connect(audioCtx.destination); o2.type="sine";
+      o2.frequency.setValueAtTime(kind==="win"?1100:880, audioCtx.currentTime+0.12);
+      g2.gain.setValueAtTime(0.0001, audioCtx.currentTime+0.12);
+      g2.gain.exponentialRampToValueAtTime(0.18, audioCtx.currentTime+0.13);
+      g2.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime+0.4);
+      o2.start(audioCtx.currentTime+0.12); o2.stop(audioCtx.currentTime+0.42);
+    }
+  }catch(e){}
+}
+
+/* ---------- Number helpers ---------- */
+function randInt(a,b){ return Math.floor(Math.random()*(b-a+1))+a; }
+function shuffle(arr){ const a=arr.slice(); for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
+function commafy(n){ return n.toLocaleString("en-AU"); }
+function cap(s){ return s.charAt(0).toUpperCase()+s.slice(1); }
+
+const ONES=["","one","two","three","four","five","six","seven","eight","nine","ten","eleven","twelve","thirteen","fourteen","fifteen","sixteen","seventeen","eighteen","nineteen"];
+const TENS=["","","twenty","thirty","forty","fifty","sixty","seventy","eighty","ninety"];
+function twoDigitsWords(n){ if(n<20) return ONES[n]; const t=Math.floor(n/10), o=n%10; return TENS[t]+(o? "-"+ONES[o] : ""); }
+function threeDigitsWords(n){
+  const h=Math.floor(n/100), rest=n%100;
+  if(h){ return ONES[h]+" hundred"+(rest? " and "+twoDigitsWords(rest):""); }
+  return twoDigitsWords(rest);
+}
+function numberToWords(n){
+  n=Math.round(n);
+  if(n===0) return "zero";
+  const th=Math.floor(n/1000), rest=n%1000;
+  if(th){
+    let s = threeDigitsWords(th)+" thousand";
+    if(rest){ s += (rest<100? " and " : ", ") + threeDigitsWords(rest); }
+    return s;
+  }
+  return threeDigitsWords(rest);
+}
+/* Money */
+function formatMoney(cents){
+  const sign = cents<0? "-" : ""; cents=Math.abs(cents);
+  const d=Math.floor(cents/100), r=cents%100;
+  return sign+"$"+d+"."+String(r).padStart(2,"0");
+}
+function moneyToWords(cents){
+  cents=Math.abs(cents);
+  const d=Math.floor(cents/100), r=cents%100; const parts=[];
+  if(d>0) parts.push(numberToWords(d)+(d===1?" dollar":" dollars"));
+  if(r>0) parts.push(numberToWords(r)+(r===1?" cent":" cents"));
+  if(!parts.length) return "zero dollars";
+  return parts.join(" and ");
+}
+
+/* ---------- Rewards ---------- */
+const BADGES=[
+  {id:"first", need:1,   emoji:"🌟", name:"First Star"},
+  {id:"ten",   need:10,  emoji:"🏅", name:"10 Stars"},
+  {id:"25",    need:25,  emoji:"🎖️", name:"25 Stars"},
+  {id:"50",    need:50,  emoji:"🏆", name:"50 Stars"},
+  {id:"100",   need:100, emoji:"👑", name:"Maths Champion"}
+];
+function renderStars(){ starCountEl.textContent = "⭐ "+state.stars; }
+function addStars(n, message){
+  state.stars += n;
+  renderStars();
+  let newBadge=null;
+  BADGES.forEach(b=>{ if(state.stars>=b.need && !state.badges[b.id]){ state.badges[b.id]=true; newBadge=b; } });
+  saveState();
+  beep(newBadge? "win":"good");
+  celebrate(message || "Well done!", n, newBadge);
+}
+function celebrate(msg, n, badge){
+  confettiBurst();
+  const toast=document.getElementById("toast");
+  toast.innerHTML = badge
+    ? '<span class="big">'+badge.emoji+'</span>New badge: '+badge.name+'!<div class="subtle">+'+n+' ⭐</div>'
+    : '<span class="big">🎉</span>'+msg+'<div class="subtle">+'+n+' ⭐</div>';
+  toast.classList.add("show");
+  setTimeout(()=>toast.classList.remove("show"), 1500);
+}
+function confettiBurst(){
+  const box=document.getElementById("confetti");
+  const bits=["⭐","🎉","✨","🌈","💫","🥳"];
+  for(let i=0;i<26;i++){
+    const s=document.createElement("div");
+    s.className="confetti-piece"; s.textContent=bits[Math.floor(Math.random()*bits.length)];
+    s.style.left=Math.random()*100+"vw";
+    s.style.animationDuration=(1.6+Math.random()*1.4)+"s";
+    s.style.fontSize=(16+Math.random()*18)+"px";
+    box.appendChild(s);
+    setTimeout(()=>s.remove(), 3200);
+  }
+}
+
+/* ---------- World / sound controls ---------- */
+function setBgDecor(){
+  const bg=document.getElementById("bg"); if(!bg) return;
+  const sets={
+    rainbow:["🌈","⭐","✨","☁️","💖","🦄"],
+    animals:["🐾","🐶","🐱","🌿","🐰","🦴"],
+    space:["🚀","🪐","⭐","🌟","☄️","👾"],
+    ocean:["🐬","🐠","🫧","🐚","🌊","⭐"]
+  };
+  const em=sets[state.world]||sets.rainbow;
+  const pos=[[7,15],[86,11],[11,71],[89,63],[46,87],[68,37]];
+  let h='<div class="blob b1"></div><div class="blob b2"></div><div class="dots"></div>';
+  em.forEach((e,i)=>{ const p=pos[i%pos.length]; h+='<span class="float" style="left:'+p[0]+'%;top:'+p[1]+'%;animation-delay:'+(i*0.8)+'s">'+e+'</span>'; });
+  bg.innerHTML=h;
+}
+function renderWorlds(){
+  const box=document.getElementById("worlds"); box.innerHTML="";
+  Object.keys(WORLDS).forEach(k=>{
+    const b=document.createElement("button");
+    b.className="world-btn"+(state.world===k?" active":"");
+    b.textContent=WORLDS[k].icon; b.title=WORLDS[k].name;
+    b.onclick=()=>{ state.world=k; document.body.dataset.world=k; saveState(); renderWorlds(); setBgDecor(); go(currentScreen); };
+    box.appendChild(b);
+  });
+}
+soundBtn.onclick=()=>{
+  state.muted=!state.muted; saveState();
+  soundBtn.textContent = state.muted? "🔇" : "🔊";
+  if(!state.muted) speak("Sound on");
+};
+
+/* ---------- Voice settings panel ---------- */
+const voiceBtn = document.getElementById("voiceBtn");
+const vcOverlay = document.getElementById("vcOverlay");
+const vcCard = document.getElementById("vcCard");
+function speedWord(r){ return r<0.7? "slow" : (r<=1.0? "normal" : "fast"); }
+function vcFill(el){
+  const min=+el.min, max=+el.max, val=+el.value, pct=((val-min)/(max-min))*100;
+  el.style.background="linear-gradient(to right, var(--vc-teal) 0%, var(--vc-teal) "+pct+"%, #3a3f4a "+pct+"%, #3a3f4a 100%)";
+}
+function openVoiceSettings(){
+  vcCard.innerHTML =
+    '<div class="vc-head">🗣️ Voice settings</div>'+
+    '<div class="vc-row"><span class="vc-lbl">Talking speed</span><span class="vc-val" id="vcSpeedVal"></span></div>'+
+    '<input type="range" class="vc-range" id="vcRate" min="0.5" max="1.5" step="0.05">'+
+    '<div class="vc-presets">'+
+      '<button class="vc-preset" data-r="0.6">🐢 Slow</button>'+
+      '<button class="vc-preset" data-r="0.8">😊<br>Normal</button>'+
+      '<button class="vc-preset" data-r="1.15">🐰 Fast</button>'+
+    '</div>'+
+    '<div class="vc-row"><span class="vc-lbl">Voice pitch</span><span class="vc-val" id="vcPitchVal"></span></div>'+
+    '<input type="range" class="vc-range" id="vcPitch" min="0.5" max="1.5" step="0.05">'+
+    '<div class="vc-row"><span class="vc-lbl">Pause between parts</span><span class="vc-val" id="vcPauseVal"></span></div>'+
+    '<input type="range" class="vc-range" id="vcPause" min="0" max="1.5" step="0.1">'+
+    '<div class="vc-btns">'+
+      '<button class="vc-btn vc-test" id="vcTest">▶ Test voice</button>'+
+      '<button class="vc-btn vc-done" id="vcDone">Done</button>'+
+    '</div>'+
+    '<div class="vc-help">Drag the sliders to set how the voice talks. Your choice is saved on this device.</div>';
+
+  const rate=document.getElementById("vcRate"), pitch=document.getElementById("vcPitch"), pause=document.getElementById("vcPause");
+  rate.value=state.rate; pitch.value=state.pitch; pause.value=state.pause;
+  function refresh(){
+    document.getElementById("vcSpeedVal").textContent = speedWord(+rate.value)+" · "+(+rate.value).toFixed(2)+"×";
+    document.getElementById("vcPitchVal").textContent = (+pitch.value).toFixed(2);
+    document.getElementById("vcPauseVal").textContent = (+pause.value).toFixed(1)+"s";
+    vcFill(rate); vcFill(pitch); vcFill(pause);
+    vcCard.querySelectorAll(".vc-preset").forEach(b=>{ b.classList.toggle("active", speedWord(+b.dataset.r)===speedWord(+rate.value)); });
+  }
+  rate.oninput =()=>{ state.rate=+rate.value;  saveState(); refresh(); };
+  pitch.oninput=()=>{ state.pitch=+pitch.value; saveState(); refresh(); };
+  pause.oninput=()=>{ state.pause=+pause.value; saveState(); refresh(); };
+  vcCard.querySelectorAll(".vc-preset").forEach(b=>{
+    b.onclick=()=>{ rate.value=b.dataset.r; state.rate=+b.dataset.r; saveState(); refresh(); speak("Nine thousand, six hundred and fifty-three", true); };
+  });
+  document.getElementById("vcTest").onclick=()=>{ speak("Hi Aylah! Nine thousand, six hundred and fifty-three.", true); };
+  document.getElementById("vcDone").onclick=closeVoiceSettings;
+  refresh();
+  vcOverlay.classList.add("show");
+}
+function closeVoiceSettings(){ stopSpeak(); vcOverlay.classList.remove("show"); }
+voiceBtn.onclick=openVoiceSettings;
+vcOverlay.onclick=(e)=>{ if(e.target===vcOverlay) closeVoiceSettings(); };
+
+/* ---------- Router ---------- */
+let currentScreen="home";
+function go(id){
+  stopSpeak();
+  if(typeof NL!=="undefined") NL.playing=false;  // stop any running "watch jumps" animation
+  currentScreen=id;
+  window.scrollTo(0,0);
+  (SCREENS[id]||renderHome)();
+}
+function backBar(title){
+  return '<div class="screen-head">'+
+    '<button class="back" onclick="go(\'home\')">⬅ Menu</button>'+
+    '<div class="screen-title">'+title+'</div></div>';
+}
+function say(text){ return "speak("+JSON.stringify(text)+")"; }
+
+/* ---------- Mascot bubble ---------- */
+function mascot(msg){
+  const w=WORLDS[state.world];
+  return '<div class="mascot-row"><div class="mascot">'+w.emoji+'</div>'+
+    '<div class="bubble">'+msg+'</div></div>';
+}
+
+/* ---------- HOME ---------- */
+const ACTIVITIES=[
+  {id:"place",   emoji:"🔢", title:"Place Value",     sub:"Build big numbers", chip:"Start here"},
+  {id:"say",     emoji:"🗣️", title:"Say the Number",  sub:"Read it out loud"},
+  {id:"expanded",emoji:"➕", title:"Expanded Form",   sub:"Break it apart"},
+  {id:"rename",  emoji:"🔁", title:"Rename Numbers",  sub:"Same number, new way"},
+  {id:"cards",   emoji:"🃏", title:"Biggest & Smallest", sub:"Card game"},
+  {id:"skip",    emoji:"⏭️", title:"Skip Counting",   sub:"10s, 100s, 1000s"},
+  {id:"numline", emoji:"📏", title:"Number Line",     sub:"Find the number"},
+  {id:"money",   emoji:"💰", title:"Money",           sub:"Count Aussie coins"}
+];
+function renderHome(){
+  const w=WORLDS[state.world];
+  let tiles="";
+  ACTIVITIES.forEach(a=>{
+    tiles+='<button class="tile" onclick="go(\''+a.id+'\')">'+
+      '<div class="emoji">'+a.emoji+'</div>'+
+      '<div class="t-title">'+a.title+'</div>'+
+      '<div class="t-sub">'+a.sub+'</div>'+
+      (a.chip?'<div class="chip">'+a.chip+'</div>':'')+
+    '</button>';
+  });
+  let shelf="";
+  BADGES.forEach(b=>{ shelf+='<div class="badge'+(state.badges[b.id]?" earned":"")+'">'+b.emoji+' '+b.name+'</div>'; });
+
+  content.innerHTML =
+    mascot("Hi Aylah! I'm "+w.helper+". Pick a game and let's do some maths together. You've got <b>"+state.stars+" ⭐</b> so far!")+
+    '<h2 class="section">🎮 Choose a game</h2>'+
+    '<div class="grid">'+tiles+'</div>'+
+    '<h2 class="section" style="margin-top:18px">🏆 Your badges</h2>'+
+    '<div class="shelf">'+shelf+'</div>';
+  renderStars();
+}
+
+/* ====== ACTIVITY MODULES INSERTED BELOW ====== */
+
+/* shared helpers */
+function digitsOf(n){ return [Math.floor(n/1000)%10, Math.floor(n/100)%10, Math.floor(n/10)%10, n%10]; }
+/* Read a whole number from an input, ignoring commas/spaces the child may type
+   (e.g. "8,000" -> 8000). parseInt alone would stop at the comma and return 8. */
+function intFromInput(id){
+  const el=document.getElementById(id); if(!el) return NaN;
+  const raw=(el.value||"").replace(/[^0-9]/g,"");
+  return raw===""? NaN : parseInt(raw,10);
+}
+function expandedStr(d){
+  const vals=[d[0]*1000,d[1]*100,d[2]*10,d[3]].filter(v=>v>0);
+  return vals.length? vals.join(" + ") : "0";
+}
+
+/* Reset buttons — clear the child's current work but keep the SAME question
+   (the "New" buttons give a different question instead). */
+function pvReset(){ stopSpeak(); PV.digits=[0,0,0,0]; PV.target=null; PV.reveal=false; renderPlaceValue(); }
+function sayReset(){ stopSpeak(); SAY.revealed=false; renderSayNumber(); }
+function expReset(){ stopSpeak(); renderExpanded(); }
+function renReset(){ stopSpeak(); renderRename(); }
+function cardsReset(){ CARDS.slots=[null,null,null,null]; renderCards(); }
+function skipClear(){ if(SKIP.mode==="watch"){ SKIP.num=SKIP.trail[0]; SKIP.prev=SKIP.num; SKIP.trail=[SKIP.num]; } renderSkip(); }
+function nlReset(){ stopSpeak(); NL.playing=false; NL.chosen=null; NL.eFrac=null; renderNumberLine(); }
+function moneyReset(){ stopSpeak(); renderMoney(); }
+
+/* ============================================================
+   1) PLACE VALUE BUILDER
+   ============================================================ */
+var PV = { digits:[9,6,5,3], target:null, reveal:false };
+function pvChange(i,delta){
+  stopSpeak();
+  PV.digits[i]=(PV.digits[i]+delta+10)%10;
+  const d=PV.digits, num=d[0]*1000+d[1]*100+d[2]*10+d[3];
+  let hit=false;
+  if(PV.target!=null && num===PV.target){ PV.target=null; hit=true; }
+  renderPlaceValue();
+  // Read aloud only when a Challenge is completed or the child taps "Say it" —
+  // NOT on every arrow press.
+  if(hit){ speak(numberToWords(num)); addStars(3,"You built it! 🎯"); }
+}
+function pvChallenge(){ PV.target=randInt(1112,9989); PV.reveal=false; renderPlaceValue(); speak("Can you build "+numberToWords(PV.target)); }
+function pvChallengeHear(){ if(PV.target!=null) speak(numberToWords(PV.target)); }
+function pvReveal(){ PV.reveal=true; renderPlaceValue(); }
+function pvSay(){ const d=PV.digits; speak(numberToWords(d[0]*1000+d[1]*100+d[2]*10+d[3])); }
+function pvCol(i,digit,cls,label){
+  return '<div class="pv-col">'+
+    '<div class="pv-label '+cls+'">'+label+'</div>'+
+    '<div class="pv-box">'+
+      '<button class="pv-arrow" onclick="pvChange('+i+',1)">▲</button>'+
+      '<div class="pv-digit">'+digit+'</div>'+
+      '<button class="pv-arrow" onclick="pvChange('+i+',-1)">▼</button>'+
+    '</div></div>';
+}
+function mabDots(count,cls,label){
+  let dots=""; for(let i=0;i<count;i++) dots+='<span class="cube '+cls+'"></span>';
+  return '<div class="mab-group"><div class="mab-dots">'+dots+'</div>'+count+' '+label+'</div>';
+}
+function renderPlaceValue(){
+  const d=PV.digits, num=d[0]*1000+d[1]*100+d[2]*10+d[3];
+  let target="";
+  if(PV.target!=null){
+    target='<div class="hintbox">🎯 Build this number:<br><b style="font-size:1.15em">'+cap(numberToWords(PV.target))+'</b>'+
+      (PV.reveal? ' <span class="subtle">= '+commafy(PV.target)+'</span>' : '')+
+      '<div class="btn-row" style="justify-content:center;margin-top:10px">'+
+        '<button class="btn btn-say" onclick="pvChallengeHear()">🔊 Hear it again</button>'+
+        (PV.reveal? '' : '<button class="btn btn-ghost" onclick="pvReveal()">👀 Show the number</button>')+
+      '</div>'+
+      '<div class="subtle" style="text-align:center;margin-top:8px">Use the ▲ ▼ arrows to build it — it will cheer when you get it right!</div>'+
+    '</div>';
+  }
+  content.innerHTML = backBar("🔢 Place Value Builder") +
+    mascot("Press the arrows to change each digit. Watch how the number changes! Every column is worth 10 times the one on its right.") +
+    '<div class="panel">'+
+      '<div class="pv-chart">'+
+        pvCol(0,d[0],"pv-th","Thousands")+
+        pvCol(1,d[1],"pv-h","Hundreds")+
+        pvCol(2,d[2],"pv-t","Tens")+
+        pvCol(3,d[3],"pv-o","Ones")+
+      '</div>'+
+      '<div class="bignum" style="margin-top:14px">'+commafy(num)+'</div>'+
+      '<div class="words">'+cap(numberToWords(num))+'</div>'+
+      '<div class="expanded" style="margin-top:6px">'+expandedStr(d)+'</div>'+
+      '<div class="mab">'+
+        mabDots(d[0],"c-th","thousands")+mabDots(d[1],"c-h","hundreds")+
+        mabDots(d[2],"c-t","tens")+mabDots(d[3],"c-o","ones")+
+      '</div>'+
+      target+
+      '<div class="btn-row" style="justify-content:center;margin-top:16px">'+
+        '<button class="btn btn-say" onclick="pvSay()">🔊 Say it</button>'+
+        '<button class="btn btn-primary" onclick="pvChallenge()">🎯 Challenge me</button>'+
+        '<button class="btn btn-ghost" onclick="pvReset()">↺ Reset</button>'+
+      '</div>'+
+    '</div>';
+}
+
+/* ============================================================
+   2) SAY THE NUMBER
+   ============================================================ */
+var SAY = { n:randInt(1000,9999), level:1, revealed:false };
+function sayNewNum(){ SAY.n = SAY.level===2? randInt(10000,99999): randInt(1000,9999); SAY.revealed=false; }
+function sayReveal(){ speak(numberToWords(SAY.n)); }
+function sayShowWords(){ SAY.revealed=true; document.getElementById("sayWords").textContent=cap(numberToWords(SAY.n)); }
+function sayNew(){ sayNewNum(); renderSayNumber(); }
+function sayRight(){ addStars(1,"Great reading!"); sayNewNum(); renderSayNumber(); }
+function sayLevel(l){ SAY.level=l; sayNewNum(); renderSayNumber(); }
+function renderSayNumber(){
+  const n=SAY.n;
+  content.innerHTML = backBar("🗣️ Say the Number") +
+    mascot("Read this number out loud like a superstar. Then check if you got it right!") +
+    '<div class="panel">'+
+      '<div class="bignum">'+commafy(n)+'</div>'+
+      '<div class="btn-row" style="justify-content:center;margin-top:14px">'+
+        '<button class="btn btn-say" onclick="sayReveal()">🔊 Hear it</button>'+
+        '<button class="btn btn-ghost" onclick="sayShowWords()">👀 Show words</button>'+
+      '</div>'+
+      '<div id="sayWords" class="words" style="margin-top:12px;min-height:26px"></div>'+
+      '<div class="btn-row" style="justify-content:center;margin-top:14px">'+
+        '<button class="btn btn-primary" onclick="sayRight()">✅ I said it right!</button>'+
+        '<button class="btn btn-ghost" onclick="sayReset()">↺ Reset</button>'+
+        '<button class="btn btn-accent" onclick="sayNew()">🔁 New number</button>'+
+      '</div>'+
+      '<div style="text-align:center;margin-top:16px">'+
+        '<button class="mode-tab'+(SAY.level===1?' active':'')+'" onclick="sayLevel(1)">Easy · up to 9,999</button> '+
+        '<button class="mode-tab'+(SAY.level===2?' active':'')+'" onclick="sayLevel(2)">Harder · up to 99,999</button>'+
+      '</div>'+
+    '</div>';
+  if(SAY.revealed) document.getElementById("sayWords").textContent=cap(numberToWords(n));
+}
+
+/* ============================================================
+   3) EXPANDED FORM
+   ============================================================ */
+var EXP = { mode:"break", n:randInt(1000,9999) };
+function expNew(){ EXP.n=randInt(1000,9999); }
+function expMode(m){ EXP.mode=m; expNew(); renderExpanded(); }
+function expSay(){ speak(numberToWords(EXP.n)); }
+function expCheck(){
+  const d=digitsOf(EXP.n), want=[d[0]*1000,d[1]*100,d[2]*10,d[3]];
+  const fb=document.getElementById("fb");
+  let ok=true;
+  for(let i=0;i<4;i++){ const v=intFromInput("exp"+i); if(v!==want[i]) ok=false; }
+  if(ok){
+    fb.className="feedback correct"; fb.textContent="✅ Perfect! "+commafy(EXP.n)+" = "+want.filter(x=>x>0).join(" + ");
+    addStars(2,"Expanded form ace!"); setTimeout(()=>{ expNew(); renderExpanded(); },1600);
+  } else { fb.className="feedback wrong"; fb.textContent="Not quite — check each box. Try the 💡 hint!"; beep("bad"); }
+}
+function expCheckTotal(){
+  const fb=document.getElementById("fb");
+  const v=intFromInput("expTotal");
+  if(v===EXP.n){ fb.className="feedback correct"; fb.textContent="✅ Yes! It makes "+commafy(EXP.n)+"."; addStars(2,"Nice adding!"); setTimeout(()=>{ expNew(); renderExpanded(); },1600); }
+  else { fb.className="feedback wrong"; fb.textContent="Not yet — add the parts together carefully."; beep("bad"); }
+}
+function expHint(){
+  const d=digitsOf(EXP.n), fb=document.getElementById("hint");
+  fb.style.display="block";
+  fb.innerHTML="💡 "+commafy(EXP.n)+" has <b>"+d[0]+"</b> thousands, <b>"+d[1]+"</b> hundreds, <b>"+d[2]+"</b> tens and <b>"+d[3]+"</b> ones. So the parts are "+d[0]+"×1000, "+d[1]+"×100, "+d[2]+"×10 and "+d[3]+"×1.";
+}
+function renderExpanded(){
+  const d=digitsOf(EXP.n), want=[d[0]*1000,d[1]*100,d[2]*10,d[3]];
+  let body="";
+  if(EXP.mode==="break"){
+    body =
+      '<div class="bignum">'+commafy(EXP.n)+'</div>'+
+      '<p class="subtle" style="text-align:center">Break it into thousands, hundreds, tens and ones.</p>'+
+      '<div class="blanks">'+
+        '<input class="num small" id="exp0" inputmode="numeric"> + '+
+        '<input class="num small" id="exp1" inputmode="numeric"> + '+
+        '<input class="num small" id="exp2" inputmode="numeric"> + '+
+        '<input class="num small" id="exp3" inputmode="numeric">'+
+      '</div>'+
+      '<div class="blanks" style="font-size:12px;opacity:.7;margin-top:4px">'+
+        '<span style="width:84px">Thousands</span> <span style="width:12px"></span> '+
+        '<span style="width:84px">Hundreds</span> <span style="width:12px"></span> '+
+        '<span style="width:84px">Tens</span> <span style="width:12px"></span> '+
+        '<span style="width:84px">Ones</span></div>'+
+      '<div class="btn-row" style="justify-content:center;margin-top:16px">'+
+        '<button class="btn btn-primary" onclick="expCheck()">Check ✓</button>'+
+        '<button class="btn btn-say" onclick="expSay()">🔊 Say it</button>'+
+        '<button class="btn btn-ghost" onclick="expHint()">💡 Hint</button>'+
+      '</div>';
+  } else {
+    body =
+      '<div class="expanded">'+want.filter(x=>x>0).join(" + ")+' = ?</div>'+
+      '<p class="subtle" style="text-align:center">Add the parts together. What number do they make?</p>'+
+      '<div class="blanks"><input class="num" id="expTotal" inputmode="numeric"></div>'+
+      '<div class="btn-row" style="justify-content:center;margin-top:16px">'+
+        '<button class="btn btn-primary" onclick="expCheckTotal()">Check ✓</button>'+
+        '<button class="btn btn-say" onclick="expSay()">🔊 Say it</button>'+
+        '<button class="btn btn-ghost" onclick="expHint()">💡 Hint</button>'+
+      '</div>';
+  }
+  content.innerHTML = backBar("➕ Expanded Form") +
+    mascot("Every digit has a value. A 4 in the thousands is worth 4000!") +
+    '<div class="mode-tabs">'+
+      '<button class="mode-tab'+(EXP.mode==="break"?" active":"")+'" onclick="expMode(\'break\')">Break it apart</button>'+
+      '<button class="mode-tab'+(EXP.mode==="build"?" active":"")+'" onclick="expMode(\'build\')">Put it together</button>'+
+    '</div>'+
+    '<div class="panel">'+body+
+      '<div id="fb" class="feedback"></div>'+
+      '<div id="hint" class="hintbox" style="display:none"></div>'+
+      '<div style="text-align:center;margin-top:10px"><button class="btn btn-ghost" onclick="expReset()">↺ Reset</button> <button class="btn btn-accent" onclick="expNew();renderExpanded()">🔁 New number</button></div>'+
+    '</div>';
+}
+
+/* ============================================================
+   4) RENAME NUMBERS
+   ============================================================ */
+var REN = null;
+function renNew(){
+  const n=randInt(1112,9989);
+  const types=[
+    ()=>({n, kind:"hundreds", blanks:[{label:"hundreds",ans:Math.floor(n/100)},{label:"ones",ans:n%100}]}),
+    ()=>({n, kind:"tens",     blanks:[{label:"tens",ans:Math.floor(n/10)},{label:"ones",ans:n%10}]}),
+    ()=>({n, kind:"thousands",blanks:[{label:"thousands",ans:Math.floor(n/1000)},{label:"ones",ans:n%1000}]}),
+    ()=>({n, kind:"full",     blanks:[{label:"thousands",ans:Math.floor(n/1000)%10},{label:"hundreds",ans:Math.floor(n/100)%10},{label:"tens",ans:Math.floor(n/10)%10},{label:"ones",ans:n%10}]})
+  ];
+  REN = types[randInt(0,types.length-1)]();
+}
+function renSay(){ speak(numberToWords(REN.n)); }
+function renCheck(){
+  const fb=document.getElementById("fb"); let ok=true;
+  REN.blanks.forEach((b,i)=>{ const v=intFromInput("ren"+i); if(v!==b.ans) ok=false; });
+  if(ok){
+    fb.className="feedback correct"; fb.textContent="✅ Yes! That's another way to say "+commafy(REN.n)+".";
+    addStars(2,"Renaming star!"); setTimeout(()=>{ renNew(); renderRename(); },1600);
+  } else { fb.className="feedback wrong"; fb.textContent="Not yet — try the 💡 hint below."; beep("bad"); }
+}
+function renHint(){
+  const n=REN.n, fb=document.getElementById("hint"); fb.style.display="block";
+  let msg="";
+  if(REN.kind==="hundreds") msg="Cover the last 2 digits of "+commafy(n)+". What is left is the number of <b>hundreds</b> ("+Math.floor(n/100)+"). The last 2 digits ("+(n%100)+") are the leftover ones.";
+  else if(REN.kind==="tens") msg="Cover the last digit of "+commafy(n)+". What is left is the number of <b>tens</b> ("+Math.floor(n/10)+"). The last digit ("+(n%10)+") is the leftover ones.";
+  else if(REN.kind==="thousands") msg="The first digit is the <b>thousands</b> ("+Math.floor(n/1000)+"). The last 3 digits ("+(n%1000)+") are the leftover ones.";
+  else msg="Each digit sits in its own place: thousands, hundreds, tens and ones. Read "+commafy(n)+" digit by digit.";
+  fb.innerHTML="💡 "+msg;
+}
+function renderRename(){
+  if(!REN) renNew();
+  let sentence="";
+  REN.blanks.forEach((b,i)=>{
+    if(i>0) sentence+=' <span style="font-weight:900">and</span> ';
+    sentence+='<input class="num small" id="ren'+i+'" inputmode="numeric"> <b>'+b.label+'</b>';
+  });
+  content.innerHTML = backBar("🔁 Rename Numbers") +
+    mascot("The same number can be said in different ways! 9,653 is 9 thousands 6 hundreds 5 tens 3 ones — OR 96 hundreds and 53 ones. Fill in the blanks.") +
+    '<div class="panel">'+
+      '<div class="bignum">'+commafy(REN.n)+'</div>'+
+      '<p class="subtle" style="text-align:center">Rename it as:</p>'+
+      '<div class="blanks">'+sentence+'</div>'+
+      '<div class="btn-row" style="justify-content:center;margin-top:16px">'+
+        '<button class="btn btn-primary" onclick="renCheck()">Check ✓</button>'+
+        '<button class="btn btn-say" onclick="renSay()">🔊 Say it</button>'+
+        '<button class="btn btn-ghost" onclick="renHint()">💡 Hint</button>'+
+      '</div>'+
+      '<div id="fb" class="feedback"></div>'+
+      '<div id="hint" class="hintbox" style="display:none"></div>'+
+      '<div style="text-align:center;margin-top:10px"><button class="btn btn-ghost" onclick="renReset()">↺ Reset</button> <button class="btn btn-accent" onclick="renNew();renderRename()">🔁 New number</button></div>'+
+    '</div>';
+}
+
+/* ============================================================
+   5) BIGGEST & SMALLEST (cards)
+   ============================================================ */
+var CARDS = { digits:[], slots:[null,null,null,null], goal:"biggest" };
+function cardsDeal(){ CARDS.digits=[]; for(let i=0;i<4;i++) CARDS.digits.push(randInt(1,9)); CARDS.slots=[null,null,null,null]; }
+function cardsGoal(g){ CARDS.goal=g; CARDS.slots=[null,null,null,null]; renderCards(); speak("Make the "+g+" number"); }
+function cardsPlace(i){ if(CARDS.slots.indexOf(i)>-1) return; const k=CARDS.slots.indexOf(null); if(k<0) return; CARDS.slots[k]=i; renderCards(); }
+function cardsRemove(k){ if(CARDS.slots[k]==null) return; CARDS.slots[k]=null; renderCards(); }
+function cardsNumber(){ if(CARDS.slots.indexOf(null)>-1) return null; return CARDS.slots.reduce((a,i)=>a*10+CARDS.digits[i],0); }
+function cardsSay(){ const n=cardsNumber(); if(n!=null) speak(numberToWords(n)); }
+function cardsCheck(){
+  const n=cardsNumber(), fb=document.getElementById("fb");
+  if(n==null){ fb.className="feedback wrong"; fb.textContent="Fill all four boxes first!"; return; }
+  const sorted=CARDS.digits.slice().sort((a,b)=>a-b);
+  const target = CARDS.goal==="biggest" ? Number(sorted.slice().reverse().join("")) : Number(sorted.join(""));
+  if(n===target){
+    fb.className="feedback correct"; fb.textContent="✅ "+commafy(n)+" is the "+CARDS.goal+"! "+cap(numberToWords(n))+".";
+    speak(numberToWords(n)); addStars(2,"Card champion!");
+  } else {
+    fb.className="feedback wrong";
+    fb.textContent="Close! Put the "+(CARDS.goal==="biggest"?"biggest":"smallest")+" digit first to make it "+(CARDS.goal==="biggest"?"bigger":"smaller")+".";
+    beep("bad");
+  }
+}
+function renderCards(){
+  if(!CARDS.digits.length) cardsDeal();
+  let hand="";
+  CARDS.digits.forEach((v,i)=>{
+    const used=CARDS.slots.indexOf(i)>-1;
+    hand+='<div class="pcard'+(used?" used":"")+'" onclick="cardsPlace('+i+')"><span class="pip">'+v+'</span>'+v+'<span class="pip b">'+v+'</span></div>';
+  });
+  let slots="";
+  CARDS.slots.forEach((ci,k)=>{ slots+='<div class="slot'+(ci!=null?" filled":"")+'" onclick="cardsRemove('+k+')">'+(ci!=null?CARDS.digits[ci]:"")+'</div>'; });
+  content.innerHTML = backBar("🃏 Biggest & Smallest")+
+    mascot("Tap your cards to fill the boxes and make the <b>"+CARDS.goal+"</b> number you can. Tap a box to send a card back.")+
+    '<div class="mode-tabs" style="justify-content:center">'+
+      '<button class="mode-tab'+(CARDS.goal==="biggest"?" active":"")+'" onclick="cardsGoal(\'biggest\')">⬆ Biggest</button>'+
+      '<button class="mode-tab'+(CARDS.goal==="smallest"?" active":"")+'" onclick="cardsGoal(\'smallest\')">⬇ Smallest</button>'+
+    '</div>'+
+    '<div class="panel">'+
+      '<p class="subtle" style="text-align:center">Your cards</p>'+
+      '<div class="cards-row">'+hand+'</div>'+
+      '<p class="subtle" style="text-align:center">Your number</p>'+
+      '<div class="slots">'+slots+'</div>'+
+      '<div class="btn-row" style="justify-content:center;margin-top:8px">'+
+        '<button class="btn btn-primary" onclick="cardsCheck()">Check ✓</button>'+
+        '<button class="btn btn-say" onclick="cardsSay()">🔊 Say it</button>'+
+        '<button class="btn btn-ghost" onclick="cardsReset()">↺ Reset</button>'+
+        '<button class="btn btn-accent" onclick="cardsDeal();renderCards()">🔁 New cards</button>'+
+      '</div>'+
+      '<div id="fb" class="feedback" style="text-align:center"></div>'+
+    '</div>';
+}
+
+/* ============================================================
+   6) SKIP COUNTING ODOMETER
+   ============================================================ */
+var SKIP = { num:9653, prev:9653, step:10, trail:[9653], mode:"watch", quizStart:0, quizStep:10 };
+function odometer(num, prev){
+  const s=String(num); let ps=String(prev);
+  ps = ps.length>s.length ? ps.slice(-s.length) : ps.padStart(s.length,"0");
+  const n=s.length; let out=[];
+  for(let i=0;i<n;i++){
+    const posFromRight=n-i;
+    if(i>0 && posFromRight%3===0) out.push('<div class="odo-digit comma">,</div>');
+    out.push('<div class="odo-digit'+(s[i]!==ps[i]?" changing":"")+'">'+s[i]+'</div>');
+  }
+  return '<div class="odometer">'+out.join("")+'</div>';
+}
+function skipSetStep(s){ SKIP.step=s; if(SKIP.mode==="quiz") skipQuizNew(); else renderSkip(); }
+function skipMove(dir){
+  SKIP.prev=SKIP.num;
+  let next=SKIP.num+dir*SKIP.step;
+  if(next<0 || next>99999) next=SKIP.num;
+  SKIP.num=next; SKIP.trail.push(next); if(SKIP.trail.length>8) SKIP.trail.shift();
+  renderSkip();   // no auto read-aloud — the child works out the new number first, then taps "Say it"
+}
+function skipSay(){ speak(numberToWords(SKIP.num)); }
+function skipReset(){ SKIP.num=randInt(1000,8000); SKIP.prev=SKIP.num; SKIP.trail=[SKIP.num]; renderSkip(); }
+function skipModeSet(m){ SKIP.mode=m; if(m==="quiz") skipQuizNew(); else renderSkip(); }
+function skipQuizNew(){ SKIP.quizStep=SKIP.step; SKIP.quizStart=randInt(1000,8000); renderSkip(); }
+function skipQuizCheck(){
+  const ans=SKIP.quizStart+4*SKIP.quizStep, fb=document.getElementById("fb");
+  const v=intFromInput("skipInput");
+  if(v===ans){ fb.className="feedback correct"; fb.textContent="✅ Yes! "+commafy(ans)+"."; speak(numberToWords(ans)); addStars(2,"Skip counting star!"); setTimeout(()=>{ skipQuizNew(); },1500); }
+  else { fb.className="feedback wrong"; fb.textContent="Not yet — add "+SKIP.quizStep+" to the last number."; beep("bad"); }
+}
+function renderSkip(){
+  const keyIdea = SKIP.step===10 ? "Counting by 10s changes the <b>tens</b> digit (until it fills to 9 and carries over!)."
+                : SKIP.step===100 ? "Counting by 100s changes the <b>hundreds</b> digit."
+                : "Counting by 1000s changes the <b>thousands</b> digit.";
+  const stepTabs=[10,100,1000].map(s=>'<button class="mode-tab'+(SKIP.step===s?" active":"")+'" onclick="skipSetStep('+s+')">+'+s+'</button>').join(" ");
+  let body;
+  if(SKIP.mode==="watch"){
+    const trail=SKIP.trail.map((v,i)=>'<div class="seq-chip'+(i===SKIP.trail.length-1?" now":"")+'">'+commafy(v)+'</div>').join("");
+    body = odometer(SKIP.num,SKIP.prev)+
+      '<div class="btn-row" style="justify-content:center;margin-top:12px">'+
+        '<button class="btn btn-ghost btn-lg" onclick="skipMove(-1)">− '+SKIP.step+'</button>'+
+        '<button class="btn btn-primary btn-lg" onclick="skipMove(1)">+ '+SKIP.step+'</button>'+
+      '</div>'+
+      '<div class="btn-row" style="justify-content:center;margin-top:8px">'+
+        '<button class="btn btn-say" onclick="skipSay()">🔊 Say it</button>'+
+      '</div>'+
+      '<div class="seq">'+trail+'</div>'+
+      '<div class="hintbox">🔑 '+keyIdea+'</div>'+
+      '<div style="text-align:center;margin-top:10px"><button class="btn btn-ghost" onclick="skipClear()">↺ Reset</button> <button class="btn btn-accent" onclick="skipReset()">🔁 New start number</button></div>';
+  } else {
+    const s=SKIP.quizStart, st=SKIP.quizStep; let chips="";
+    for(let i=0;i<4;i++) chips+='<div class="seq-chip">'+commafy(s+i*st)+'</div>';
+    chips+='<div class="seq-chip now"><input class="num small" id="skipInput" inputmode="numeric" style="width:96px"></div>';
+    body='<p class="subtle" style="text-align:center">Counting up by '+st+'. What comes next?</p>'+
+      '<div class="seq" style="align-items:center">'+chips+'</div>'+
+      '<div class="btn-row" style="justify-content:center;margin-top:14px">'+
+        '<button class="btn btn-primary" onclick="skipQuizCheck()">Check ✓</button>'+
+        '<button class="btn btn-ghost" onclick="skipClear()">↺ Reset</button>'+
+        '<button class="btn btn-accent" onclick="skipQuizNew()">🔁 New question</button>'+
+      '</div>'+
+      '<div id="fb" class="feedback" style="text-align:center"></div>';
+  }
+  content.innerHTML = backBar("⏭️ Skip Counting")+
+    mascot("Jump along the numbers! Pick your jump size, then count up or down.")+
+    '<div class="mode-tabs" style="justify-content:center">'+
+      '<button class="mode-tab'+(SKIP.mode==="watch"?" active":"")+'" onclick="skipModeSet(\'watch\')">Explore</button>'+
+      '<button class="mode-tab'+(SKIP.mode==="quiz"?" active":"")+'" onclick="skipModeSet(\'quiz\')">Quiz me</button>'+
+    '</div>'+
+    '<div class="panel">'+
+      '<div class="btn-row" style="justify-content:center;margin-bottom:6px"><span class="subtle">Jump size:</span> '+stepTabs+'</div>'+
+      body+
+    '</div>';
+}
+
+/* ============================================================
+   7) NUMBER LINE
+   ============================================================ */
+var NL = { mode:"read", level:1, started:false, playing:false, start:null, step:100, target:5, chosen:null, eMin:0, eMax:null, eTarget:0, eTol:0, eFrac:null };
+function nlNew(){
+  NL.started=true; NL.playing=false;
+  if(NL.mode==="place" && NL.level===1){
+    // ESTIMATE: only the two ends are labelled — tap roughly where the number goes
+    const opts=[{max:1000,mult:100,tol:50},{max:5000,mult:500,tol:250},{max:10000,mult:1000,tol:500}];
+    const o=opts[randInt(0,opts.length-1)];
+    NL.eMin=0; NL.eMax=o.max; NL.eTol=o.tol;
+    NL.eTarget=randInt(1,(o.max/o.mult)-1)*o.mult;
+    NL.eFrac=null;
+  } else if(NL.mode==="place" && NL.level===2){
+    // BENCHMARKS: only the ends + middle are labelled — count on to the exact tick
+    NL.step=[100,500,1000][randInt(0,2)];
+    if(NL.step===1000) NL.start=randInt(0,4)*1000;
+    else if(NL.step===500) NL.start=randInt(0,10)*500;
+    else NL.start=randInt(10,60)*100;
+    const cand=[1,2,3,4,6,7,8,9]; NL.target=cand[randInt(0,cand.length-1)]; NL.chosen=null;
+  } else {
+    // READ / JUMPS: every tick is labelled
+    NL.step=[10,100,1000][randInt(0,2)];
+    if(NL.step===10) NL.start=randInt(100,900)*10;
+    else if(NL.step===100) NL.start=randInt(10,90)*100;
+    else NL.start=randInt(1,5)*1000;
+    NL.target=randInt(1,9); NL.chosen=null;
+  }
+  renderNumberLine();
+}
+function nlMode(m){ NL.mode=m; nlNew(); }
+function nlLevel(l){ NL.level=l; nlNew(); }
+function nlPick(i){ if(!(NL.mode==="place" && NL.level===2)) return; NL.chosen=i; renderNumberLine(); }
+function nlValue(i){ return NL.start+i*NL.step; }
+function nlSay(){ const v=(NL.mode==="place"&&NL.level===1)? NL.eTarget : nlValue(NL.target); speak(numberToWords(v)); }
+function nlSayInput(){ const v=intFromInput("nlInput"); if(!isNaN(v)) speak(numberToWords(v)); else speak("Type a number first"); }
+function nlCheckRead(){
+  const fb=document.getElementById("fb");
+  const v=intFromInput("nlInput");
+  if(v===nlValue(NL.target)){ fb.className="feedback correct"; fb.textContent="✅ Yes! The arrow points to "+commafy(nlValue(NL.target))+"."; speak(numberToWords(nlValue(NL.target))); addStars(2,"Number line ninja!"); setTimeout(nlNew,1600); }
+  else { fb.className="feedback wrong"; fb.textContent="Not yet — count the jumps of "+NL.step+" from the start."; beep("bad"); }
+}
+function nlCheckPlace(){
+  const fb=document.getElementById("fb");
+  if(NL.chosen==null){ fb.className="feedback wrong"; fb.textContent="Tap a spot on the line first!"; return; }
+  if(NL.chosen===NL.target){ fb.className="feedback correct"; fb.textContent="✅ Spot on! That's "+commafy(nlValue(NL.target))+"."; speak(numberToWords(nlValue(NL.target))); addStars(2,"Number line ninja!"); setTimeout(nlNew,1600); }
+  else { fb.className="feedback wrong"; fb.textContent="Not quite — count on in "+NL.step+"s from a labelled number."; beep("bad"); }
+}
+function nlEstimateTap(ev){
+  const r=ev.currentTarget.getBoundingClientRect();
+  let f=(ev.clientX-r.left)/r.width; f=Math.max(0,Math.min(1,f));
+  NL.eFrac=f; renderNumberLine();
+}
+function nlCheckEstimate(){
+  const fb=document.getElementById("fb");
+  if(NL.eFrac==null){ fb.className="feedback wrong"; fb.textContent="Tap the line to place your guess first!"; return; }
+  const guess=NL.eMin+NL.eFrac*(NL.eMax-NL.eMin);
+  if(Math.abs(guess-NL.eTarget)<=NL.eTol){
+    fb.className="feedback correct"; fb.textContent="✅ Great estimate! "+commafy(NL.eTarget)+" sits right about there.";
+    speak(numberToWords(NL.eTarget)); addStars(3,"Estimation star!"); setTimeout(nlNew,1900);
+  } else {
+    fb.className="feedback wrong";
+    const half=(NL.eMin+NL.eMax)/2;
+    const dir=guess<NL.eTarget? "a little to the right ➡️" : "a little to the left ⬅️";
+    const bench=NL.eTarget>half? "more than halfway" : (NL.eTarget<half? "less than halfway" : "right at the middle");
+    fb.textContent="Close! Move your mark "+dir+". Tip: "+commafy(NL.eTarget)+" is "+bench+".";
+    beep("bad");
+  }
+}
+function nlSvgWrap(inner){
+  return '<div class="numline-wrap"><svg class="nl" viewBox="0 0 720 150" width="100%" style="min-width:640px;max-width:760px">'+inner+'</svg></div>';
+}
+function nlSvgTicks(){
+  const W=720,mx=44,span=W-2*mx,n=10;
+  const clickable = (NL.mode==="place" && NL.level===2);
+  const jumps = NL.mode==="jumps";
+  const benchLabels = clickable ? [0,5,10] : null; // benchmarks mode: only ends + middle labelled
+  let g='<line x1="'+mx+'" y1="87" x2="'+(W-mx)+'" y2="87" stroke="#55556a" stroke-width="3"/>'+
+        '<polygon points="'+(W-mx)+',81 '+(W-mx+12)+',87 '+(W-mx)+',93" fill="#55556a"/>';
+  for(let i=0;i<=n;i++){
+    const x=mx+i*(span/n), val=nlValue(i), isT=(i===NL.target);
+    g+='<line x1="'+x+'" y1="78" x2="'+x+'" y2="96" stroke="#8a8a99" stroke-width="2"/>';
+    let labelTxt="";
+    if(NL.mode==="read"&&isT) labelTxt="?";
+    else if(!benchLabels || benchLabels.indexOf(i)>-1) labelTxt=commafy(val);
+    if(labelTxt) g+='<text x="'+x+'" y="114" text-anchor="middle" class="nl-label">'+labelTxt+'</text>';
+    if(jumps){
+      if(i<n){ const x2=mx+(i+1)*(span/n), xm=(x+x2)/2;
+        g+='<path d="M '+x+' 76 Q '+xm+' 34 '+x2+' 76" fill="none" stroke="var(--accent)" stroke-width="2.5"/>';
+        g+='<text x="'+xm+'" y="30" text-anchor="middle" class="nl-label" style="fill:var(--accent)">+'+NL.step+'</text>'; }
+      if(NL.chosen===i) g+='<circle cx="'+x+'" cy="87" r="9" fill="var(--primary)"/>';
+    }
+    if(clickable){
+      g+='<rect x="'+(x-18)+'" y="60" width="36" height="60" fill="transparent" class="nl-tick" onclick="nlPick('+i+')"/>';
+      if(NL.chosen===i){ g+='<circle cx="'+x+'" cy="87" r="10" fill="var(--accent)"/><polygon points="'+(x-9)+',56 '+(x+9)+',56 '+x+',72" fill="var(--accent)"/>'; }
+    }
+    if(NL.mode==="read"&&isT) g+='<polygon points="'+(x-9)+',56 '+(x+9)+',56 '+x+',72" fill="var(--primary)"/>';
+  }
+  return nlSvgWrap(g);
+}
+function nlSvgEstimate(){
+  const W=720,mx=44,span=W-2*mx, xm=mx+span/2;
+  let g='<line x1="'+mx+'" y1="87" x2="'+(W-mx)+'" y2="87" stroke="#55556a" stroke-width="3"/>';
+  [[0,NL.eMin],[1,NL.eMax]].forEach(p=>{ const x=mx+p[0]*span;
+    g+='<line x1="'+x+'" y1="74" x2="'+x+'" y2="100" stroke="#55556a" stroke-width="3"/>';
+    g+='<text x="'+x+'" y="118" text-anchor="middle" class="nl-label">'+commafy(p[1])+'</text>'; });
+  // faint middle benchmark (unlabelled) to support "more/less than halfway" thinking
+  g+='<line x1="'+xm+'" y1="80" x2="'+xm+'" y2="94" stroke="#c3c3d0" stroke-width="2" stroke-dasharray="3 3"/>';
+  if(NL.eFrac!=null){ const x=mx+NL.eFrac*span;
+    const guess=Math.round((NL.eMin+NL.eFrac*(NL.eMax-NL.eMin))/10)*10;
+    g+='<line x1="'+x+'" y1="72" x2="'+x+'" y2="96" stroke="var(--accent)" stroke-width="3"/>';
+    g+='<polygon points="'+(x-10)+',54 '+(x+10)+',54 '+x+',72" fill="var(--accent)"/>';
+    g+='<text x="'+Math.max(34,Math.min(W-34,x))+'" y="46" text-anchor="middle" class="nl-label" style="fill:var(--accent);font-weight:700">about '+commafy(guess)+'</text>'; }
+  g+='<rect x="'+mx+'" y="40" width="'+span+'" height="72" fill="transparent" style="cursor:pointer" onclick="nlEstimateTap(event)"/>';
+  return nlSvgWrap(g);
+}
+function nlPlay(){
+  if(NL.playing) return;
+  NL.playing=true;
+  let i=0;
+  (function step(){
+    if(!NL.playing) return;
+    if(i>10){ NL.playing=false; renderNumberLine(); return; }
+    NL.chosen=i; renderNumberLine();
+    const val=nlValue(i); i++;
+    if(state.muted || !window.speechSynthesis){
+      setTimeout(step, 1100);                       // no voice: gentle fixed pace
+    } else {
+      // advance only AFTER this number has finished being spoken, so the
+      // animation follows the child's chosen speed and pauses
+      let advanced=false;
+      const advance=()=>{ if(advanced) return; advanced=true; if(NL.playing) setTimeout(step, 350); };
+      speak(numberToWords(val), false, advance);
+      setTimeout(advance, 7000);                     // safety net if speech never reports finishing
+    }
+  })();
+}
+function nlStop(){ NL.playing=false; stopSpeak(); renderNumberLine(); }
+function renderNumberLine(){
+  if(!NL.started){ nlNew(); return; }
+  const isEst=(NL.mode==="place" && NL.level===1);
+  const isBench=(NL.mode==="place" && NL.level===2);
+  let controls="", prompt="";
+  if(NL.mode==="read"){
+    prompt="What number is the arrow pointing to?";
+    controls='<div class="blanks"><input class="num" id="nlInput" inputmode="numeric"></div>'+
+      '<div class="btn-row" style="justify-content:center;margin-top:12px">'+
+        '<button class="btn btn-primary" onclick="nlCheckRead()">Check ✓</button>'+
+        '<button class="btn btn-say" onclick="nlSayInput()">🔊 Hear my answer</button>'+
+        '<button class="btn btn-ghost" onclick="nlReset()">↺ Reset</button>'+
+        '<button class="btn btn-accent" onclick="nlNew()">🔁 New line</button></div>';
+  } else if(isEst){
+    prompt='Tap about where <b>'+commafy(NL.eTarget)+'</b> goes. Only the two ends are labelled!';
+    controls='<div class="btn-row" style="justify-content:center;margin-top:6px">'+
+        '<button class="btn btn-primary" onclick="nlCheckEstimate()">Check ✓</button>'+
+        '<button class="btn btn-say" onclick="nlSay()">🔊 Say it</button>'+
+        '<button class="btn btn-ghost" onclick="nlReset()">↺ Reset</button>'+
+        '<button class="btn btn-accent" onclick="nlNew()">🔁 New line</button></div>';
+  } else if(isBench){
+    prompt='Tap where <b>'+commafy(nlValue(NL.target))+'</b> goes. Count on from a labelled number.';
+    controls='<div class="btn-row" style="justify-content:center;margin-top:6px">'+
+        '<button class="btn btn-primary" onclick="nlCheckPlace()">Check ✓</button>'+
+        '<button class="btn btn-say" onclick="nlSay()">🔊 Say it</button>'+
+        '<button class="btn btn-ghost" onclick="nlReset()">↺ Reset</button>'+
+        '<button class="btn btn-accent" onclick="nlNew()">🔁 New line</button></div>';
+  } else {
+    prompt="Watch the jumps of "+NL.step+". Press Play and count along!";
+    controls='<div class="btn-row" style="justify-content:center;margin-top:6px">'+
+        (NL.playing
+          ? '<button class="btn btn-primary" onclick="nlStop()">⏸ Stop</button>'
+          : '<button class="btn btn-primary" onclick="nlPlay()">▶ Play jumps</button>')+
+        '<button class="btn btn-ghost" onclick="nlReset()">↺ Reset</button>'+
+        '<button class="btn btn-accent" onclick="nlNew()">🔁 New line</button></div>';
+  }
+  const levelTabs = (NL.mode==="place") ?
+    '<div class="mode-tabs" style="justify-content:center;margin-top:-6px">'+
+      '<button class="mode-tab'+(NL.level===1?" active":"")+'" onclick="nlLevel(1)">🎯 Estimate</button>'+
+      '<button class="mode-tab'+(NL.level===2?" active":"")+'" onclick="nlLevel(2)">🔢 Count exactly</button>'+
+    '</div>' : '';
+  content.innerHTML = backBar("📏 Number Line")+
+    mascot("Numbers live in order on a line. Estimate where a number sits, or count the jumps to find it!")+
+    '<div class="mode-tabs" style="justify-content:center">'+
+      '<button class="mode-tab'+(NL.mode==="read"?" active":"")+'" onclick="nlMode(\'read\')">Read it</button>'+
+      '<button class="mode-tab'+(NL.mode==="place"?" active":"")+'" onclick="nlMode(\'place\')">Place it</button>'+
+      '<button class="mode-tab'+(NL.mode==="jumps"?" active":"")+'" onclick="nlMode(\'jumps\')">Watch jumps</button>'+
+    '</div>'+
+    levelTabs+
+    '<div class="panel">'+
+      '<p class="instru" style="text-align:center">'+prompt+'</p>'+
+      (isEst? nlSvgEstimate() : nlSvgTicks())+
+      controls+
+      '<div id="fb" class="feedback" style="text-align:center"></div>'+
+    '</div>';
+}
+
+/* ============================================================
+   8) AUSTRALIAN MONEY
+   ============================================================ */
+var MONEY = { mode:"count", items:[], total:0, price:0, paid:0, change:0 };
+function labelOf(v){ const m={5:"5c",10:"10c",20:"20c",50:"50c",100:"$1",200:"$2",500:"$5",1000:"$10",2000:"$20",5000:"$50",10000:"$100"}; return m[v]||formatMoney(v); }
+function coinEl(v){ const m={200:"gold small2",100:"gold",50:"silver",20:"silver",10:"silver",5:"silver"}; return '<div class="coin '+m[v]+'">'+labelOf(v)+'</div>'; }
+function noteEl(v){ const m={500:"n5",1000:"n10",2000:"n20",5000:"n50",10000:"n100"}; return '<div class="note '+m[v]+'">'+labelOf(v)+'</div>'; }
+function moneyPiece(v){ return v>=500? noteEl(v): coinEl(v); }
+function moneyNewCount(){
+  const pool=[200,100,100,50,50,20,20,10,10,5,500];
+  const count=randInt(3,6); MONEY.items=[]; let total=0;
+  for(let i=0;i<count;i++){ const v=pool[randInt(0,pool.length-1)]; MONEY.items.push(v); total+=v; }
+  MONEY.items.sort((a,b)=>b-a); MONEY.total=total;
+}
+function moneyNewChange(){
+  let price=randInt(15,900); price=Math.round(price/5)*5;
+  const opts=[500,1000,2000,5000].filter(p=>p>price);
+  MONEY.paid=opts[randInt(0,opts.length-1)]; MONEY.price=price; MONEY.change=MONEY.paid-price;
+}
+function moneyMode(m){ MONEY.mode=m; if(m==="count") moneyNewCount(); else moneyNewChange(); renderMoney(); }
+function parseMoney(str){ const raw=(str||"").replace(/[^0-9.]/g,""); if(!raw) return NaN; return Math.round(parseFloat(raw)*100); }
+function moneySay(){ speak(moneyToWords(MONEY.mode==="count"?MONEY.total:MONEY.change)); }
+function moneyCheckCount(){
+  const fb=document.getElementById("fb"), cents=parseMoney(document.getElementById("moneyIn").value);
+  if(isNaN(cents)){ fb.className="feedback wrong"; fb.textContent="Type an amount like 4.50"; return; }
+  if(cents===MONEY.total){ fb.className="feedback correct"; fb.textContent="✅ Yes! "+formatMoney(MONEY.total)+" — "+cap(moneyToWords(MONEY.total))+"."; speak(moneyToWords(MONEY.total)); addStars(2,"Money master!"); setTimeout(()=>{ moneyNewCount(); renderMoney(); },1800); }
+  else { fb.className="feedback wrong"; fb.textContent="Not quite. Start with the biggest and count on. Try the 💡 hint!"; beep("bad"); }
+}
+function moneyCheckChange(){
+  const fb=document.getElementById("fb"), cents=parseMoney(document.getElementById("moneyIn").value);
+  if(isNaN(cents)){ fb.className="feedback wrong"; fb.textContent="Type an amount like 1.60"; return; }
+  if(cents===MONEY.change){ fb.className="feedback correct"; fb.textContent="✅ Correct! Change is "+formatMoney(MONEY.change)+"."; speak("The change is "+moneyToWords(MONEY.change)); addStars(3,"Change champion!"); setTimeout(()=>{ moneyNewChange(); renderMoney(); },1900); }
+  else { fb.className="feedback wrong"; fb.textContent="Not yet — count up from "+formatMoney(MONEY.price)+" to "+formatMoney(MONEY.paid)+"."; beep("bad"); }
+}
+function moneyHint(){
+  const fb=document.getElementById("hint"); fb.style.display="block";
+  if(MONEY.mode==="count"){
+    const sorted=MONEY.items.slice().sort((a,b)=>b-a); let run=0;
+    const steps=sorted.map(v=>{ run+=v; return labelOf(v)+" → "+formatMoney(run); });
+    fb.innerHTML="💡 Start with the biggest and count on: "+steps.join(", ")+".";
+  } else {
+    fb.innerHTML="💡 Count up from "+formatMoney(MONEY.price)+" to "+formatMoney(MONEY.paid)+". How much do you add on? That is the change.";
+  }
+}
+function renderMoney(){
+  let body;
+  if(MONEY.mode==="count"){
+    if(!MONEY.items.length) moneyNewCount();
+    const tray=MONEY.items.map(moneyPiece).join("");
+    body='<p class="instru" style="text-align:center">How much money is here altogether?</p>'+
+      '<div class="money-tray">'+tray+'</div>'+
+      '<div class="blanks" style="margin-top:10px"><span style="font-size:26px;font-weight:900">$</span><input class="num" id="moneyIn" inputmode="decimal" placeholder="0.00"></div>'+
+      '<div class="btn-row" style="justify-content:center;margin-top:14px">'+
+        '<button class="btn btn-primary" onclick="moneyCheckCount()">Check ✓</button>'+
+        '<button class="btn btn-say" onclick="moneySay()">🔊 Say it</button>'+
+        '<button class="btn btn-ghost" onclick="moneyHint()">💡 Hint</button>'+
+        '<button class="btn btn-ghost" onclick="moneyReset()">↺ Reset</button>'+
+        '<button class="btn btn-accent" onclick="moneyNewCount();renderMoney()">🔁 New</button>'+
+      '</div>';
+  } else {
+    if(!MONEY.paid) moneyNewChange();
+    body='<p class="instru" style="text-align:center">You buy something for <span class="price-tag">🏷️ '+formatMoney(MONEY.price)+'</span><br>and pay with '+moneyPiece(MONEY.paid)+' <b>'+labelOf(MONEY.paid)+'</b>.</p>'+
+      '<p class="subtle" style="text-align:center">How much change do you get back?</p>'+
+      '<div class="blanks" style="margin-top:6px"><span style="font-size:26px;font-weight:900">$</span><input class="num" id="moneyIn" inputmode="decimal" placeholder="0.00"></div>'+
+      '<div class="btn-row" style="justify-content:center;margin-top:14px">'+
+        '<button class="btn btn-primary" onclick="moneyCheckChange()">Check ✓</button>'+
+        '<button class="btn btn-say" onclick="moneySay()">🔊 Say it</button>'+
+        '<button class="btn btn-ghost" onclick="moneyHint()">💡 Hint</button>'+
+        '<button class="btn btn-ghost" onclick="moneyReset()">↺ Reset</button>'+
+        '<button class="btn btn-accent" onclick="moneyNewChange();renderMoney()">🔁 New</button>'+
+      '</div>';
+  }
+  content.innerHTML = backBar("💰 Money")+
+    mascot("Let's count Aussie money! Add up the coins and notes, or work out the change.")+
+    '<div class="mode-tabs" style="justify-content:center">'+
+      '<button class="mode-tab'+(MONEY.mode==="count"?" active":"")+'" onclick="moneyMode(\'count\')">Count it</button>'+
+      '<button class="mode-tab'+(MONEY.mode==="change"?" active":"")+'" onclick="moneyMode(\'change\')">Make change</button>'+
+    '</div>'+
+    '<div class="panel">'+body+
+      '<div id="fb" class="feedback" style="text-align:center"></div>'+
+      '<div id="hint" class="hintbox" style="display:none"></div>'+
+    '</div>';
+}
+
+
+/* ---------- Screen table (functions hoisted) ---------- */
+const SCREENS={
+  home:renderHome,
+  place:renderPlaceValue,
+  say:renderSayNumber,
+  expanded:renderExpanded,
+  rename:renderRename,
+  cards:renderCards,
+  skip:renderSkip,
+  numline:renderNumberLine,
+  money:renderMoney
+};
+
+/* ---------- Boot ---------- */
+document.body.dataset.world=state.world;
+soundBtn.textContent = state.muted? "🔇" : "🔊";
+renderWorlds();
+setBgDecor();
+renderStars();
+go("home");
+</script>
+<script>
+  /* Register the service worker so the app installs and works offline.
+     (Service workers only run over http/https — not when opening the file directly.) */
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', function () {
+      navigator.serviceWorker.register('service-worker.js').catch(function () {});
+    });
+  }
+</script>
+</body>
+</html>

@@ -1,0 +1,17 @@
+{
+  "name": "Aylah's Maths Adventure",
+  "short_name": "Maths Adventure",
+  "description": "A friendly Grade 4 maths practice app — place value, number lines, skip counting and Australian money.",
+  "lang": "en-AU",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#f1ecff",
+  "theme_color": "#7c4dff",
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
