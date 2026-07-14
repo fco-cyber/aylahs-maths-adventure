@@ -3,7 +3,7 @@
    All paths are relative so it works under a GitHub Pages project subpath
    (e.g. https://fco-cyber.github.io/aylahs-maths-adventure/). */
 
-const CACHE = 'aylah-maths-v1';
+const CACHE = 'aylah-maths-v2';
 
 const ASSETS = [
   './',

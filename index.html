@@ -318,8 +318,9 @@
   .tile:nth-child(6) .emoji{ background:linear-gradient(135deg,#5cb8ff,#3d6fb0); }
   .tile:nth-child(7) .emoji{ background:linear-gradient(135deg,#ff8173,#e14b3b); }
   .tile:nth-child(8) .emoji{ background:linear-gradient(135deg,#ffd76b,#f0a92e); }
+  .tile:nth-child(9) .emoji{ background:linear-gradient(135deg,#5fce85,#41d6c3); }
   .tile:nth-child(1){animation-delay:.03s} .tile:nth-child(2){animation-delay:.06s} .tile:nth-child(3){animation-delay:.09s} .tile:nth-child(4){animation-delay:.12s}
-  .tile:nth-child(5){animation-delay:.15s} .tile:nth-child(6){animation-delay:.18s} .tile:nth-child(7){animation-delay:.21s} .tile:nth-child(8){animation-delay:.24s}
+  .tile:nth-child(5){animation-delay:.15s} .tile:nth-child(6){animation-delay:.18s} .tile:nth-child(7){animation-delay:.21s} .tile:nth-child(8){animation-delay:.24s} .tile:nth-child(9){animation-delay:.27s}
 
   /* screen header + panels */
   .back{ border-radius:16px; background:rgba(255,255,255,.9); }
@@ -382,7 +383,7 @@
     #bg .float{ font-size:24px; }
   }
 </style>
-<meta name="description" content="A friendly Grade 4 maths practice app — place value, number lines, skip counting and Australian money.">
+<meta name="description" content="A friendly Grade 4 maths practice app — place value, number lines, skip counting, sums and Australian money.">
 <meta name="theme-color" content="#7c4dff">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="favicon.png" sizes="any">
@@ -704,7 +705,8 @@ const ACTIVITIES=[
   {id:"cards",   emoji:"🃏", title:"Biggest & Smallest", sub:"Card game"},
   {id:"skip",    emoji:"⏭️", title:"Skip Counting",   sub:"10s, 100s, 1000s"},
   {id:"numline", emoji:"📏", title:"Number Line",     sub:"Find the number"},
-  {id:"money",   emoji:"💰", title:"Money",           sub:"Count Aussie coins"}
+  {id:"money",   emoji:"💰", title:"Money",           sub:"Count Aussie coins"},
+  {id:"ops",     emoji:"🧮", title:"Sums",            sub:"➕ ➖ ✖️ ➗"}
 ];
 function renderHome(){
   const w=WORLDS[state.world];
@@ -1402,9 +1404,126 @@ function renderMoney(){
 }
 
 
+/* ============================================================
+   9) SUMS  —  + − × ÷  (Grade 4 level)
+   ============================================================ */
+var OPS = { op:"add", level:1, a:0, b:0 };
+function opsSymbol(){ return {add:"+",sub:"−",mul:"×",div:"÷"}[OPS.op]; }
+function opsWord(){ return {add:"plus",sub:"minus",mul:"times",div:"divided by"}[OPS.op]; }
+function opsResult(){ return OPS.op==="add"?OPS.a+OPS.b : OPS.op==="sub"?OPS.a-OPS.b : OPS.op==="mul"?OPS.a*OPS.b : Math.floor(OPS.a/OPS.b); }
+function opsRemainder(){ return OPS.a % OPS.b; }
+function opsNew(){
+  const L=OPS.level;
+  if(OPS.op==="add"){
+    if(L===1){ OPS.a=randInt(10,99); OPS.b=randInt(10,99); }
+    else { OPS.a=randInt(100,9999); OPS.b=randInt(100,9999); }
+  } else if(OPS.op==="sub"){
+    if(L===1){ OPS.a=randInt(20,99); OPS.b=randInt(10,OPS.a); }
+    else { OPS.a=randInt(300,9999); OPS.b=randInt(50,OPS.a); }
+  } else if(OPS.op==="mul"){
+    if(L===1){ OPS.a=randInt(2,10); OPS.b=randInt(2,10); }
+    else { OPS.a=randInt(11,99); OPS.b=randInt(2,9); }
+  } else {
+    if(L===1){ const d=randInt(2,10), q=randInt(2,10); OPS.b=d; OPS.a=d*q; }
+    else { OPS.b=randInt(2,9); OPS.a=randInt(20,99); }
+  }
+  renderOps();
+}
+function opsSet(op){ OPS.op=op; opsNew(); }
+function opsLevel(l){ OPS.level=l; opsNew(); }
+function opsReset(){ stopSpeak(); renderOps(); }
+function opsSay(){ speak(numberToWords(OPS.a)+" "+opsWord()+" "+numberToWords(OPS.b)); }
+function opsWin(fb){
+  fb.className="feedback correct";
+  let line=commafy(OPS.a)+" "+opsSymbol()+" "+commafy(OPS.b)+" = "+commafy(opsResult());
+  let say=numberToWords(OPS.a)+" "+opsWord()+" "+numberToWords(OPS.b)+" equals "+numberToWords(opsResult());
+  if(OPS.op==="div" && OPS.level===2 && opsRemainder()>0){ line+=" r "+opsRemainder(); say+=" remainder "+numberToWords(opsRemainder()); }
+  fb.textContent="✅ "+line;
+  speak(say); addStars(OPS.level===2?3:2,"Nice working!");
+  setTimeout(opsNew,1700);
+}
+function opsCheck(){
+  const fb=document.getElementById("fb");
+  const v=intFromInput("opAns");
+  if(OPS.op==="div" && OPS.level===2){
+    let r=intFromInput("opRem"); if(isNaN(r)) r=0;   // blank remainder counts as 0
+    if(v===opsResult() && r===opsRemainder()){ opsWin(fb); }
+    else { fb.className="feedback wrong"; fb.textContent="Not yet — how many "+OPS.b+"s fit into "+OPS.a+", and what is left over?"; beep("bad"); }
+    return;
+  }
+  if(v===opsResult()){ opsWin(fb); }
+  else {
+    fb.className="feedback wrong";
+    fb.textContent={ add:"Not quite — add the ones column first, then carry if it makes 10 or more.",
+                     sub:"Not quite — start with the ones; borrow if the top digit is smaller.",
+                     mul:"Not quite — try skip counting, or build from a fact you know.",
+                     div:"Not quite — think of the "+OPS.b+" times table." }[OPS.op];
+    beep("bad");
+  }
+}
+function opsHint(){
+  const h=document.getElementById("hint"); h.style.display="block";
+  const A=OPS.a, B=OPS.b; let m="";
+  if(OPS.op==="add") m="Line the numbers up by place value. Add the <b>ones</b> first, then tens, then hundreds. If a column makes 10 or more, carry 1 to the next column.";
+  else if(OPS.op==="sub") m="Line the numbers up by place value. Start with the <b>ones</b>. If the top digit is smaller than the bottom, borrow 10 from the next column.";
+  else if(OPS.op==="mul"){
+    if(OPS.level===1) m=A+" × "+B+" means <b>"+A+" groups of "+B+"</b>. Skip count by "+B+", "+A+" times — or build from a fact you know (like your 2s, 5s or 10s).";
+    else { const t=Math.floor(A/10)*10, o=A%10; m="Split "+A+" into "+t+" + "+o+", then multiply each: ("+t+" × "+B+") + ("+o+" × "+B+") = "+(t*B)+" + "+(o*B)+"."; }
+  } else {
+    m="How many <b>"+B+"s</b> fit into "+A+"? Use the "+B+" times table: "+B+" × ? "+(OPS.level===2?"gets as close to "+A+" as you can without going over":"= "+A)+".";
+    if(OPS.level===2) m+=" Whatever is left over is the <b>remainder</b>.";
+  }
+  h.innerHTML="💡 "+m;
+}
+function opsVertical(){
+  const A=String(OPS.a), B=String(OPS.b), sym=opsSymbol();
+  const w=Math.max(A.length,B.length)+1;
+  const box='display:inline-block;text-align:right;font-family:var(--font-display);font-weight:700;font-size:46px;line-height:1.15;font-variant-numeric:tabular-nums;min-width:'+w+'ch';
+  return '<div style="text-align:center">'+
+    '<div style="'+box+'">'+
+      '<div>'+A+'</div>'+
+      '<div style="border-bottom:5px solid var(--ink);padding-bottom:6px;position:relative"><span style="position:absolute;left:0">'+sym+'</span>'+B+'</div>'+
+    '</div>'+
+    '<div class="blanks" style="margin-top:12px"><input class="num" id="opAns" inputmode="numeric" placeholder="?"></div>'+
+  '</div>';
+}
+function renderOps(){
+  const opTabs=[["add","➕ Add"],["sub","➖ Subtract"],["mul","✖️ Times"],["div","➗ Divide"]]
+    .map(o=>'<button class="mode-tab'+(OPS.op===o[0]?" active":"")+'" onclick="opsSet(\''+o[0]+'\')">'+o[1]+'</button>').join(" ");
+  const lvlTabs='<button class="mode-tab'+(OPS.level===1?" active":"")+'" onclick="opsLevel(1)">Easy</button> '+
+                '<button class="mode-tab'+(OPS.level===2?" active":"")+'" onclick="opsLevel(2)">Harder</button>';
+  let problem;
+  if(OPS.op==="add"||OPS.op==="sub"){
+    problem=opsVertical();
+  } else if(OPS.op==="div" && OPS.level===2){
+    problem='<div class="bignum">'+commafy(OPS.a)+' ÷ '+commafy(OPS.b)+' = ?</div>'+
+      '<div class="blanks"><input class="num small" id="opAns" inputmode="numeric" placeholder="?"> <b>r</b> <input class="num small" id="opRem" inputmode="numeric" placeholder="0"></div>'+
+      '<div class="subtle" style="text-align:center;margin-top:2px">answer &nbsp; remainder</div>';
+  } else {
+    problem='<div class="bignum">'+commafy(OPS.a)+' '+opsSymbol()+' '+commafy(OPS.b)+' = ?</div>'+
+      '<div class="blanks"><input class="num" id="opAns" inputmode="numeric" placeholder="?"></div>';
+  }
+  content.innerHTML = backBar("🧮 Sums")+
+    mascot("Add, take away, times and divide! Work it out in your head or on paper, then type your answer. Tap 💡 for a strategy — not the answer!")+
+    '<div class="mode-tabs" style="justify-content:center">'+opTabs+'</div>'+
+    '<div class="mode-tabs" style="justify-content:center;margin-top:-6px">'+lvlTabs+'</div>'+
+    '<div class="panel">'+
+      problem+
+      '<div class="btn-row" style="justify-content:center;margin-top:16px">'+
+        '<button class="btn btn-primary" onclick="opsCheck()">Check ✓</button>'+
+        '<button class="btn btn-say" onclick="opsSay()">🔊 Say it</button>'+
+        '<button class="btn btn-ghost" onclick="opsHint()">💡 Hint</button>'+
+      '</div>'+
+      '<div id="fb" class="feedback" style="text-align:center"></div>'+
+      '<div id="hint" class="hintbox" style="display:none"></div>'+
+      '<div style="text-align:center;margin-top:10px"><button class="btn btn-ghost" onclick="opsReset()">↺ Reset</button> <button class="btn btn-accent" onclick="opsNew()">🔁 New sum</button></div>'+
+    '</div>';
+}
+
 /* ---------- Screen table (functions hoisted) ---------- */
 const SCREENS={
   home:renderHome,
+  ops:renderOps,
   place:renderPlaceValue,
   say:renderSayNumber,
   expanded:renderExpanded,
